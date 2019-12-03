@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    [Django] Custom Log handler |
+    
+    yNotes</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+  
+  <script src="/js/pace.min.js"></script>
+</head>
+
+<body>
+<main class="content">
+  <section class="outer">
+  
+
+<article id="post-django-custom-log-handler" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      [Django] Custom Log handler
+    </h1>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2019/11/15/django-custom-log-handler/" class="article-date">
+  <time datetime="2019-11-15T00:08:16.000Z" itemprop="datePublished">2019-11-15</time>
+</a>
+        
+      </div>
+    
+
+    
+      
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <p>Log handler是當系統發生錯誤時，log 處理的方式，譬如把錯誤訊息寫入log檔案或是發信給管理者。</p>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>我想要在系統出錯的時候，自動發信給管理員/IT人員。</p>
+<p>Django提供<code>AdminEmailHandler</code>以處理Django Application發生異常時，自動寄信通知管理員。<br>這裡所謂的管理員是只settings裡面<code>ADMIN</code>參數設定的資料，也表示未來要更改管理員就要動到code，當然如果有統一收信窗口就比較沒有影響。  </p>
+<p>但我的情況不是這樣，又因為我習慣用Admin site當作管理資料的GUI，superuser的角色只會給IT人員使用，所以就打算寫一個能夠從<code>UserModel</code>取得<code>superuser</code>當作收件人的log handler.  </p>
+<h2 id="研究"><a href="#研究" class="headerlink" title="研究"></a>研究</h2><p><strong>先來瞧瞧AdminEmailHandler的寫法:</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AdminEmailHandler</span><span class="params">(logging.Handler)</span>:</span></span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">emit</span><span class="params">(self, record)</span>:</span></span><br><span class="line">        ...</span><br><span class="line">    </span><br><span class="line">        html_message = reporter.get_traceback_html() <span class="keyword">if</span> self.include_html <span class="keyword">else</span> <span class="literal">None</span></span><br><span class="line">        self.send_mail(subject, message, fail_silently=<span class="literal">True</span>, html_message=html_message)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">send_mail</span><span class="params">(self, subject, message, *args, **kwargs)</span>:</span></span><br><span class="line">        mail.mail_admins(subject, message, *args, connection=self.connection(), **kwargs)</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<p>可以發現發信的method使用內建的<code>mail_admins</code>，而往下追或是官方文件也寫了，這個method裡面確實讀取的收件人email來自settings的<code>ADMIN</code>參數設定。</p>
+<p>所以呢，可以繼承這個已經寫好的handler，再另外寫一個method覆蓋<code>mail_admins</code>就好。</p>
+<h2 id="實作"><a href="#實作" class="headerlink" title="實作"></a>實作</h2><p>首先要有一個替代mail_admins的method。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">mail_superusers</span><span class="params">(subject=<span class="string">''</span>, body=<span class="string">''</span>, fail_silently=False, html_message=<span class="string">''</span>)</span>:</span></span><br><span class="line">    <span class="string">"""Send a message to the superusers, users who are set to be a superuser."""</span></span><br><span class="line">    <span class="comment"># get superusers</span></span><br><span class="line">    user_model = apps.get_model(<span class="string">'base'</span>, <span class="string">'User'</span>)</span><br><span class="line">    superusers = user_model.objects.filter(is_superuser=<span class="literal">True</span>)</span><br><span class="line">    <span class="comment"># get their emails</span></span><br><span class="line">    email_addrs = [user.email <span class="keyword">for</span> user <span class="keyword">in</span> superusers]</span><br><span class="line">    connection = get_connection()</span><br><span class="line">    mail = EmailMultiAlternatives(</span><br><span class="line">                 subject=subject,</span><br><span class="line">                body=body,</span><br><span class="line">                to=email_addrs,</span><br><span class="line">                connection=connection</span><br><span class="line">            )</span><br><span class="line">    <span class="keyword">if</span> html_message:</span><br><span class="line">        mail.attach_alternative(html_message, <span class="string">'text/html'</span>)</span><br><span class="line">    mail.send(fail_silently=fail_silently)</span><br></pre></td></tr></table></figure>
+
+<p>這裡踩了一個小坑，User必須是<strong>lazy import</strong>，否則Application無法順利執行。</p>
+<p>再來是custom log handler，非常簡單，就只需要把send_mail覆寫就行:</p>
+<figure class="highlight python"><figcaption><span>log_handler.py</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SuperUserEmailHandler</span><span class="params">(AdminEmailHandler)</span>:</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">send_mail</span><span class="params">(self, subject, message, *args, **kwargs)</span>:</span></span><br><span class="line">        mail_superusers(subject, message, *args, **kwargs)</span><br></pre></td></tr></table></figure>
+
+<p>最後放到LOGGING設定裡面:  </p>
+<figure class="highlight python"><figcaption><span>settings.py</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="string">'mail_mis'</span>: &#123;</span><br><span class="line">    <span class="string">'level'</span>: <span class="string">'ERROR'</span>,</span><br><span class="line">    <span class="string">'filters'</span>: [<span class="string">'require_debug_false'</span>],</span><br><span class="line">    <span class="string">'class'</span>: <span class="string">'log_handler.SuperUserEmailHandler'</span>,</span><br><span class="line">    <span class="string">'include_html'</span>: <span class="literal">True</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>結束!</p>
+<p>但是因為他本來就是傳送一整份degug頁面(就是DEBUG=True會看見的黃頁)<br>，我也沒有特別去改寫要傳送的內容，所以email內包含很詳細的bug追蹤，是有點危險的喔。</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p><a href="https://docs.djangoproject.com/en/2.2/topics/logging/#django.utils.log.AdminEmailHandler" target="_blank" rel="noopener">Django docs - AdminEmailHandler</a><br><a href="https://stackoverflow.com/questions/29744016/how-to-lazy-load-a-model-in-a-managers-to-stop-circular-imports" target="_blank" rel="noopener">Stackoverflow - How to Lazy Load a model in a managers to stop circular imports?</a><br><a href="https://myapollo.com.tw/zh-tw/django-customize-logging-handler/" target="_blank" rel="noopener">寫得更詳盡 - Django 打造 logging handler 將 exception 送到 Slack</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://willynpi.github.io/2019/11/15/django-custom-log-handler/" data-id="ck3pz7p970002qoug2b4p5w52"
+         class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Django-tricks/" rel="tag">Django, tricks</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+    
+  <nav class="article-nav">
+    
+      <a href="/2019/12/03/django-centos7-apache/" class="article-nav-link">
+        <strong class="article-nav-caption">最新文章</strong>
+        <div class="article-nav-title">
+          
+            [Django] CentOS 7 &amp; Apache
+          
+        </div>
+      </a>
+    
+    
+  </nav>
+
+
+  
+
+  
+    
+  <div class="gitalk" id="gitalk-container"></div>
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+    var gitalk = new Gitalk({
+      clientID: 'bb02e2e7c6102706d204',
+      clientSecret: '52698361139734dd90e7d2412e01aa1f4dcfb572',
+      repo: 'gittalk',
+      owner: 'willynpi',
+      admin: ['willynpi'],
+      // id: location.pathname,      // Ensure uniqueness and length less than 50
+      id: md5(location.pathname),
+      distractionFreeMode: false,  // Facebook-like distraction free mode
+      pagerDirection: 'last'
+    })
+
+  gitalk.render('gitalk-container')
+  </script>
+
+  
+
+</article>
+
+
+
+</section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2019 yNotes</li>
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean" target="_blank" rel="noopener">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+
+<aside class="sidebar sidebar-specter">
+  
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/logo-y.svg" alt="yNotes"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">Home</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">Archives</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/gallery">Gallery</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">About</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        搜尋
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+        <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+          <i class="fe fe-feed"></i>
+        </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+  <script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+  <script src="/js/tocbot.min.js"></script>
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+</html>
