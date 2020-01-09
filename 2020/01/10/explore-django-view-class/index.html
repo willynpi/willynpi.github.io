@@ -7,6 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>
+    explore-django-view-class |
     
     yNotes</title>
   
@@ -21,35 +22,8 @@
 
 <body>
 <main class="content">
-  <section class="jumbotron">
-  <div class="video">
-    
-      <div class="video-frame">
-        <img src="/images/ocean/overlay-hero.png" alt="Decorative image frame">
-      </div>
-    
-    <div class="video-media">
-      <img src="/images/movie.jpg">
-    </div>
-    <div class="video-inner text-center text-white">
-      <h1><a href="/">yNotes</a></h1>
-      <p>山型 ｜ 藝 ｜ 程式</p>
-    </div>
-    <div class="video-learn-more">
-      <a class="anchor" href="#landingpage"><i class="fe fe-mouse"></i></a>
-    </div>
-  </div>
-</section>
-
-<div id="landingpage">
   <section class="outer">
-  <article class="articles">
-    
-    <h1 class="page-type-title"></h1>
-
-    
-      
-        
+  
 
 <article id="post-explore-django-view-class" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
   
@@ -58,9 +32,9 @@
       <header class="article-header">
         
   
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/01/10/explore-django-view-class/">explore-django-view-class</a>
-    </h2>
+    <h1 class="article-title" itemprop="name">
+      explore-django-view-class
+    </h1>
   
   
 
@@ -78,6 +52,14 @@
         
       </div>
     
+
+    
+      
+    <div class="tocbot"></div>
+
+
+
+
 
     
 
@@ -120,6 +102,41 @@
   </div>
 
   
+    
+  <nav class="article-nav">
+    
+    
+      <a href="/2019/12/03/django-centos7-apache/" class="article-nav-link">
+        <strong class="article-nav-caption">最舊文章</strong>
+        <div class="article-nav-title">[Django] CentOS 7 &amp; Apache</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+    
+  <div class="gitalk" id="gitalk-container"></div>
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+    var gitalk = new Gitalk({
+      clientID: 'bb02e2e7c6102706d204',
+      clientSecret: '52698361139734dd90e7d2412e01aa1f4dcfb572',
+      repo: 'willynpi.github.io',
+      owner: 'willynpi',
+      admin: ['willynpi'],
+      // id: location.pathname,      // Ensure uniqueness and length less than 50
+      id: md5(location.pathname),
+      distractionFreeMode: false,  // Facebook-like distraction free mode
+      pagerDirection: 'last'
+    })
+
+  gitalk.render('gitalk-container')
+  </script>
 
   
 
@@ -127,190 +144,7 @@
 
 
 
-      
-        
-
-<article id="post-django-centos7-apache" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-  
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2019/12/03/django-centos7-apache/">[Django] CentOS 7 &amp; Apache</a>
-    </h2>
-  
-  
-
-
-
-
-      </header>
-    
-
-    
-      <div class="article-meta">
-        <a href="/2019/12/03/django-centos7-apache/" class="article-date">
-  <time datetime="2019-12-03T12:46:55.000Z" itemprop="datePublished">2019-12-03</time>
-</a>
-        
-      </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-        <p>每次要安裝東西的時候都覺得   <strong>很棒</strong>。</p>
-<p>這次是把Django 架在 CentOS 7 搭配 Apache 之上<br>這種文章隨便搜都是一大把，但無奈每個人的狀況都不一樣<br>何況有些都僅只有步驟，每次都讓我有”好像別人安裝都很順”的錯覺(當然這可能不是錯覺 … )。<br>最後只好自己去看官方文件檔，但你知道的，都是密密麻麻的英文字！<br>我又有讀很快結果漏看某些重要訊息的毛病 （ˊ_____&gt;ˋ）  </p>
-<p>為了怕弄壞，我先弄了個VMware來做這件事。  </p>
-<h2 id="python"><a href="#python" class="headerlink" title="python"></a>python</h2><p>首先裝python有兩種途徑，一個是從資源庫，一個是透過源碼。<br>前面的簡單，後面的就是自己對安裝的東西比較有掌控度，但yum不會記錄到這一筆安裝。<br>最最一開始，我就是按表抄課的走第二個方式<br>但很抱歉，文章是之後才補的，所以實際上遇到什麼困難我以遺忘，或是害怕再想起來。</p>
-<p>只能說用資源庫安裝沒什麼問題，很棒。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ yum install -y https://centos7.iuscommunity.org/ius-release.rpm</span><br><span class="line">$ yum update</span><br><span class="line">$ yum install python36u python36u-libs python36u-devel python36u-pip</span><br></pre></td></tr></table></figure>
-
-<p>完成後可立即使用python3.6。👍<br>然後安裝virtualenv，先升級</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ python3.6 -m pip install --upgrade pip</span><br><span class="line">$ python3.6 -m pip install virtualenv</span><br></pre></td></tr></table></figure>
-
-<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>必須是<code>2.0</code>, <code>2.2</code> 或 <code>2.4</code>版本。</p>
-<h2 id="mod-wsgi"><a href="#mod-wsgi" class="headerlink" title="mod_wsgi"></a>mod_wsgi</h2><p>再來是討M的<code>mod_wsgi</code>，有很多文章都用<code>yum install mod_wsgi</code><br>但是如果你用的是<em>python3</em>開發，那就會跟我一樣卡在絕望深谷，因為它預設就是使用<em>python2.7</em>。</p>
-<p>有兩種安裝方式：源碼跟python包，我選源碼。</p>
-<p><strong>會需要gcc for C compile</strong></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ yum install gcc</span><br><span class="line">$ wget https://github.com/GrahamDumpleton/mod_wsgi/archive/4.6.5.tar.gz</span><br><span class="line">$ tar xzf 4.6.5.tar.gz</span><br><span class="line">$ <span class="built_in">cd</span> mod_wsgi-4.6.5</span><br><span class="line">$ ./configure --with-python=`<span class="built_in">which</span> python3.6`</span><br><span class="line">$ make</span><br><span class="line">$ make install</span><br><span class="line"></span><br><span class="line">＃ 最後產出 wsgi_module <span class="string">'/usr/lib64/httpd/modules/mod_wsgi.so'</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="httpd-conf"><a href="#httpd-conf" class="headerlink" title="httpd.conf"></a>httpd.conf</h2><p>用Apache伺服python網頁有兩種模式，<code>嵌入式</code>與<code>Daemon</code>。<br>主要差別在於</p>
-<ul>
-<li>嵌入式會影響到其他Apache內相關設定，而且更動到專案內的code就要restart service。</li>
-<li>Daemon跑自己的，也能偵測到code的改變，但前提是你必須手動 touch wsgi.py。</li>
-</ul>
-<ol>
-<li><p>新增 wsgi_module</p>
-<figure class="highlight apache"><table><tr><td class="code"><pre><span class="line"><span class="attribute"><span class="nomarkup">LoadModule</span></span> wsgi_module '/usr/lib64/httpd/modules/mod_wsgi.so'</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>virtualhost</p>
-<figure class="highlight apache"><table><tr><td class="code"><pre><span class="line"><span class="comment"># WSGIRestrictEmbedded 預設為 Off，因為要進入Daemon Mode所以設定為 On (也是官方推薦 讚讚) </span></span><br><span class="line"><span class="attribute">WSGIRestrictEmbedded</span> <span class="literal">On</span></span><br><span class="line"></span><br><span class="line"><span class="section">&lt;Virtualhost ip&gt;</span></span><br><span class="line"><span class="attribute"><span class="nomarkup">ServerName</span></span> domain.com</span><br><span class="line"><span class="attribute">CustomLog</span> /var/log/httpd/access.log</span><br><span class="line"><span class="attribute">ErrorLog</span> /var/log/httpd/error.log</span><br><span class="line"></span><br><span class="line"><span class="section">&lt;/Virtualhost&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 這裡主要是設定daemon的名稱還有執行的python，如果使用虛擬環境，那就是到虛擬環境裡的python.exe</span></span><br><span class="line"><span class="attribute">WSGIDaemonProcess</span> process-name python-home=path/to/python</span><br><span class="line"><span class="attribute">WSGIProcessGroup</span>  process-name</span><br><span class="line"><span class="attribute">WSGIScriptAlias</span> / 'path/to/wsgi.py'</span><br><span class="line"></span><br><span class="line"><span class="section">&lt;Directory 'path/to/wsgi'&gt;</span></span><br><span class="line"><span class="section">&lt;Files wsgi.py&gt;</span>   </span><br><span class="line"><span class="attribute">Require</span> <span class="literal">all</span> granted</span><br><span class="line"><span class="section">&lt;/Files&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># settings.py裡面設定的那個 STATICFILES_ROOT</span></span><br><span class="line"><span class="attribute">Alias</span> '/static' 'path/to/static-files'</span><br><span class="line"></span><br><span class="line"><span class="section">&lt;Directory 'path/to/static-files'&gt;</span></span><br><span class="line">    <span class="attribute">AllowOverride</span> None</span><br><span class="line">    <span class="attribute">Require</span> <span class="literal">all</span> granted</span><br><span class="line"><span class="section">&lt;/Directory&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ol>
-<p>大致上簡易的設定就是這個樣子<br><code>再提醒一次：每當有程式碼的更動，都要touch wsgi.py才會全部重新載入喔！</code></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://willynpi.github.io/2019/12/03/django-centos7-apache/" data-id="ck56zml2l0000wst6aznmf2pp"
-         class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Django/" rel="tag">Django</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-
-</article>
-
-
-
-      
-        
-
-<article id="post-django-custom-log-handler" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-  
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2019/11/15/django-custom-log-handler/">[Django] Custom Log handler</a>
-    </h2>
-  
-  
-
-
-
-
-      </header>
-    
-
-    
-      <div class="article-meta">
-        <a href="/2019/11/15/django-custom-log-handler/" class="article-date">
-  <time datetime="2019-11-15T00:08:16.000Z" itemprop="datePublished">2019-11-15</time>
-</a>
-        
-      </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-        <p>Log handler是當系統發生錯誤時，log 處理的方式，譬如把錯誤訊息寫入log檔案或是發信給管理者。</p>
-<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>我想要在系統出錯的時候，自動發信給管理員/IT人員。</p>
-<p>Django提供<code>AdminEmailHandler</code>以處理Django Application發生異常時，自動寄信通知管理員。<br>這裡所謂的管理員是只settings裡面<code>ADMIN</code>參數設定的資料，也表示未來要更改管理員就要動到code，當然如果有統一收信窗口就比較沒有影響。  </p>
-<p>但我的情況不是這樣，又因為我習慣用Admin site當作管理資料的GUI，superuser的角色只會給IT人員使用，所以就打算寫一個能夠從<code>UserModel</code>取得<code>superuser</code>當作收件人的log handler.  </p>
-<h2 id="研究"><a href="#研究" class="headerlink" title="研究"></a>研究</h2><p><strong>先來瞧瞧AdminEmailHandler的寫法:</strong></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AdminEmailHandler</span><span class="params">(logging.Handler)</span>:</span></span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">emit</span><span class="params">(self, record)</span>:</span></span><br><span class="line">        ...</span><br><span class="line">    </span><br><span class="line">        html_message = reporter.get_traceback_html() <span class="keyword">if</span> self.include_html <span class="keyword">else</span> <span class="literal">None</span></span><br><span class="line">        self.send_mail(subject, message, fail_silently=<span class="literal">True</span>, html_message=html_message)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">send_mail</span><span class="params">(self, subject, message, *args, **kwargs)</span>:</span></span><br><span class="line">        mail.mail_admins(subject, message, *args, connection=self.connection(), **kwargs)</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
-
-<p>可以發現發信的method使用內建的<code>mail_admins</code>，而往下追或是官方文件也寫了，這個method裡面確實讀取的收件人email來自settings的<code>ADMIN</code>參數設定。</p>
-<p>所以呢，可以繼承這個已經寫好的handler，再另外寫一個method覆蓋<code>mail_admins</code>就好。</p>
-<h2 id="實作"><a href="#實作" class="headerlink" title="實作"></a>實作</h2><p>首先要有一個替代mail_admins的method。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">mail_superusers</span><span class="params">(subject=<span class="string">''</span>, body=<span class="string">''</span>, fail_silently=False, html_message=<span class="string">''</span>)</span>:</span></span><br><span class="line">    <span class="string">"""Send a message to the superusers, users who are set to be a superuser."""</span></span><br><span class="line">    <span class="comment"># get superusers</span></span><br><span class="line">    user_model = apps.get_model(<span class="string">'base'</span>, <span class="string">'User'</span>)</span><br><span class="line">    superusers = user_model.objects.filter(is_superuser=<span class="literal">True</span>)</span><br><span class="line">    <span class="comment"># get their emails</span></span><br><span class="line">    email_addrs = [user.email <span class="keyword">for</span> user <span class="keyword">in</span> superusers]</span><br><span class="line">    connection = get_connection()</span><br><span class="line">    mail = EmailMultiAlternatives(</span><br><span class="line">                 subject=subject,</span><br><span class="line">                body=body,</span><br><span class="line">                to=email_addrs,</span><br><span class="line">                connection=connection</span><br><span class="line">            )</span><br><span class="line">    <span class="keyword">if</span> html_message:</span><br><span class="line">        mail.attach_alternative(html_message, <span class="string">'text/html'</span>)</span><br><span class="line">    mail.send(fail_silently=fail_silently)</span><br></pre></td></tr></table></figure>
-
-<p>這裡踩了一個小坑，User必須是<strong>lazy import</strong>，否則Application無法順利執行。</p>
-<p>再來是custom log handler，非常簡單，就只需要把send_mail覆寫就行:</p>
-<figure class="highlight python"><figcaption><span>log_handler.py</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SuperUserEmailHandler</span><span class="params">(AdminEmailHandler)</span>:</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">send_mail</span><span class="params">(self, subject, message, *args, **kwargs)</span>:</span></span><br><span class="line">        mail_superusers(subject, message, *args, **kwargs)</span><br></pre></td></tr></table></figure>
-
-<p>最後放到LOGGING設定裡面:  </p>
-<figure class="highlight python"><figcaption><span>settings.py</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="string">'mail_mis'</span>: &#123;</span><br><span class="line">    <span class="string">'level'</span>: <span class="string">'ERROR'</span>,</span><br><span class="line">    <span class="string">'filters'</span>: [<span class="string">'require_debug_false'</span>],</span><br><span class="line">    <span class="string">'class'</span>: <span class="string">'log_handler.SuperUserEmailHandler'</span>,</span><br><span class="line">    <span class="string">'include_html'</span>: <span class="literal">True</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>結束!</p>
-<p>但是因為他本來就是傳送一整份degug頁面(就是DEBUG=True會看見的黃頁)<br>，我也沒有特別去改寫要傳送的內容，所以email內包含很詳細的bug追蹤，是有點危險的喔。</p>
-<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p><a href="https://docs.djangoproject.com/en/2.2/topics/logging/#django.utils.log.AdminEmailHandler" target="_blank" rel="noopener">Django docs - AdminEmailHandler</a><br><a href="https://stackoverflow.com/questions/29744016/how-to-lazy-load-a-model-in-a-managers-to-stop-circular-imports" target="_blank" rel="noopener">Stackoverflow - How to Lazy Load a model in a managers to stop circular imports?</a><br><a href="https://myapollo.com.tw/zh-tw/django-customize-logging-handler/" target="_blank" rel="noopener">寫得更詳盡 - Django 打造 logging handler 將 exception 送到 Slack</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://willynpi.github.io/2019/11/15/django-custom-log-handler/" data-id="ck56zml2s0002wst65wkj3uce"
-         class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Django-tricks/" rel="tag">Django, tricks</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-
-</article>
-
-
-
-      
-  </article>
-  
-
-  
 </section>
-</div>
-
   <footer class="footer">
   <div class="outer">
     <div class="float-right">
@@ -330,8 +164,8 @@
 
 </main>
 
-  <aside class="sidebar">
-    
+<aside class="sidebar sidebar-specter">
+  
     <button class="navbar-toggle"></button>
 <nav class="navbar">
   
@@ -396,6 +230,21 @@
   <script src="/fancybox/jquery.fancybox.min.js"></script>
 
 
+
+  <script src="/js/tocbot.min.js"></script>
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
 
 
 <script src="/js/ocean.js"></script>
