@@ -51,6 +51,219 @@
       
         
 
+<article id="post-Django-dynamic-urls" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2020/02/14/Django-dynamic-urls/">[Django] Dynamic URLs</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2020/02/14/Django-dynamic-urls/" class="article-date">
+  <time datetime="2020-02-14T11:55:47.000Z" itemprop="datePublished">2020-02-14</time>
+</a>
+        
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h1 id="Django-Dynamic-URLs"><a href="#Django-Dynamic-URLs" class="headerlink" title="Django Dynamic URLs"></a>Django Dynamic URLs</h1><p>Have you ever considered to create dynamic urls in Django?<br>Not the url parameters but the ones which are gernerated according to data from a database or a file.  </p>
+<h2 id="Concepts"><a href="#Concepts" class="headerlink" title="Concepts"></a>Concepts</h2><p>Normally, we create an url path in <code>urls.py</code> and map each url to a view function or class:  </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">path(<span class="string">'demo'</span>, app.demo, related_name=<span class="string">"demo"</span>)</span><br><span class="line">path(<span class="string">'demo_class'</span>, app.DemoClass.as_view(), related_name=<span class="string">"demo_class"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>The path function needs url string, view function and other parameters.<br>The point is how do we make the url string and the view function dynamic?  </p>
+<h2 id="Dynamic-Import"><a href="#Dynamic-Import" class="headerlink" title="Dynamic Import"></a>Dynamic Import</h2><p>The module <code>imorptlib</code> offers you to import module by moudle’s name.  </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">module = importlib.import_module(<span class="string">'sys'</span>)</span><br><span class="line"><span class="comment"># &lt;module 'sys' (built-in)&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>As you can see, module’s name is a string, that means we have more flexibilty to get module we want.  </p>
+<p>This is how to import the views:  </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">view_module = importlib.import_module(<span class="string">'%s.views'</span> % app_name)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Get-View"><a href="#Get-View" class="headerlink" title="Get View"></a>Get View</h2><p>Next step is to get the view from view_module.<br>A view is an attribute of the view_module, you can see the attribute list using built-in function <code>dir()</code>.  </p>
+<p>Use built-in function <code>getattr()</code> to get the view.  </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">view = getattr(view_module, <span class="string">'myView'</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="CBV-or-FBV"><a href="#CBV-or-FBV" class="headerlink" title="CBV or FBV"></a>CBV or FBV</h2><p>Then we have to decide the view is CBV or FBV, the biggest difference in urlpatterns is the <code>is_view()</code> function.  </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">view_function = view.as_view() <span class="keyword">if</span> inspect.isclass(view) <span class="keyword">else</span> view</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Return"><a href="#Return" class="headerlink" title="Return"></a>Return</h2><p>For the case of Django build-in path method <code>include</code>:  </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">include(<span class="string">'app.urls'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#(&lt;module 'app.urls' from 'E:\\myproject\\app\\urls.py'&gt;, None, None)</span></span><br></pre></td></tr></table></figure>
+
+<p>Last two parameters are <strong>app_name</strong> and <strong>namesapce</strong>.<br>That means we should add these two parameters when returning the patterns.  </p>
+<p>All in all,  </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">programs = (</span><br><span class="line">    (<span class="string">'app'</span>, <span class="string">'viewa'</span>),</span><br><span class="line">    (<span class="string">'app'</span>, <span class="string">'viewb'</span>),</span><br><span class="line">    (<span class="string">'common'</span>, <span class="string">'viewc'</span>),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">dynamic_urls(setting):</span><br><span class="line">    urlpatters = []</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> sett <span class="keyword">in</span> setting:</span><br><span class="line">        module_name, view_name = sett</span><br><span class="line">        url = <span class="string">'%s/%s'</span> % (module_name, view_name)</span><br><span class="line">        <span class="comment"># depends on the rule you use</span></span><br><span class="line">        module = importlib.import_module(<span class="string">'%s.views'</span> % module_name)</span><br><span class="line">        <span class="comment"># dynamic import</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            view = getattr(module, view_name)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            view = view.as_view() <span class="keyword">if</span> inspect.isclass(view) <span class="keyword">else</span> view</span><br><span class="line">            urlpatterns.append(</span><br><span class="line">                path(url, view)</span><br><span class="line">            )</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line">    <span class="keyword">return</span> urlpatterns, <span class="string">'pds'</span>, <span class="string">'pds'</span></span><br><span class="line"></span><br><span class="line">dynamic_urls(programs)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ([&lt;URLPattern 'app/viewa'&gt;, &lt;URLPattern 'app/viewb'&gt;,</span></span><br><span class="line"><span class="comment">#   &lt;URLPattern 'common/viewc'&gt;, None, None)</span></span><br></pre></td></tr></table></figure>
+
+<p>Then you can do something like this in your another urls.py:  </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">path(<span class="string">'demo/'</span>, dynamic_urls(setting))</span><br></pre></td></tr></table></figure>
+
+<p>;-)  </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://willynpi.github.io/2020/02/14/Django-dynamic-urls/" data-id="ck6m4ch51000506t6gy5pcp0s"
+         class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Django-hack/" rel="tag">Django, hack</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
+<article id="post-ux-workshop" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2020/01/23/ux-workshop/">[UX] 用戶訪談的入門體驗</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2020/01/23/ux-workshop/" class="article-date">
+  <time datetime="2020-01-22T16:05:17.407Z" itemprop="datePublished">2020-01-23</time>
+</a>
+        
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h1 id="用戶訪談的入門體驗-UX-工作坊"><a href="#用戶訪談的入門體驗-UX-工作坊" class="headerlink" title="用戶訪談的入門體驗 UX 工作坊"></a>用戶訪談的入門體驗 UX 工作坊</h1><p>之前一直想參加UX相關主題的工作坊，但近一年似乎滿稀少的，查到很多活動都是前年或是剛錯過QQ<br>上個月突然在睡前滑到<a href="https://www.facebook.com/groups/uxui.taichung/" target="_blank" rel="noopener">UI/UX臺中聚的FB社團</a>，也正好在不久的將來有一場<code>用戶訪談的入門體驗 UX 工作坊</code>，then here I am.</p>
+<p>本來怕自己尷尬病發作，緊張就腦袋空白的我會不會搞砸了小組練習？<br>結果是我多想了  </p>
+<p>Soking 是講師，他在<a href="https://medium.com/@soking" target="_blank" rel="noopener">Ｍeduim</a>發了很多關於UX的文章。  </p>
+<p>他一開始就問大家誰當過訪問者與受訪者，質性研究與量化研究的差別在哪裡？  </p>
+<h2 id="質性研究-v-s-量化研究"><a href="#質性研究-v-s-量化研究" class="headerlink" title="質性研究 v.s. 量化研究"></a>質性研究 v.s. 量化研究</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">：質性研究花的時間比較長，不像量化研究一樣能一把撒下等待收網。</span><br><span class="line">：質性研究像是在做收斂，由多個東西之中求出相同的，量化研究就相反。</span><br><span class="line">：質性研究可以挖出一些量化研究無法知道的事情。</span><br></pre></td></tr></table></figure>
+
+<p>質性研究的資料搜集方法有很多種，這個工作坊只專注在訪談法上面。<br>訪談分為結構化、半結構化/脈絡。  </p>
+<ul>
+<li>結構化的信效度比較高、訪談人員比較容易被訓練，因為訪談過程是固定流程的。  </li>
+<li>半結構化/脈絡也稱作師徒訪談，因為訪談者必須像是徒弟一樣向受訪者師父請教，記得研究目的後，就當自己是<em>完全無知</em>。  </li>
+</ul>
+<h2 id="破冰練習"><a href="#破冰練習" class="headerlink" title="破冰練習"></a>破冰練習</h2><p>兩人一組的五分鐘小練習，主要是希望引導受訪者談論自己與物品的關係。</p>
+<p>開始之前，有很重要的提問原則： <strong>保持冷靜、維持開放性、避免指向性</strong>。</p>
+<p>在有點慌亂之下，我和隔壁氣質姐姐開始了訪談練習，我是訪談者，她是受訪者。<br>完全是我的第一次訪談經驗，我發現自己好像很容易就跟受訪者開聊起來XD</p>
+<h2 id="適合脈絡訪談的五種角色"><a href="#適合脈絡訪談的五種角色" class="headerlink" title="適合脈絡訪談的五種角色"></a>適合脈絡訪談的五種角色</h2><figure class="highlight asciidoc"><table><tr><td class="code"><pre><span class="line"><span class="bullet">- </span>利害關係人</span><br><span class="line"><span class="bullet">- </span>同事</span><br><span class="line"><span class="bullet">- </span>購買人/使用者/目標用戶</span><br><span class="line"><span class="bullet">- </span>供應商</span><br><span class="line"><span class="bullet">- </span>專家</span><br></pre></td></tr></table></figure>
+
+<h2 id="深入提問技巧"><a href="#深入提問技巧" class="headerlink" title="深入提問技巧"></a>深入提問技巧</h2><p>這part換了一個夥伴，選了一個主題進行練習 – <code>在便利商店結帳時，用什麼方式付款？</code><br>練習他列出的深入技巧。  </p>
+<p>在一開始提問時，可以<strong>從空泛的、一般的問題切入，再更深入</strong><br>可以在一般問題與深入問題之間切換，最好是取得<strong>受訪者實際操作的行為，遠比主觀感受好!</strong></p>
+<p>我在這裡一樣保持慌亂(?)而且一樣要聊起來了XD<br>但是比剛剛冷靜多了!<br>不過如果不是因為自己對於超商結帳方式小有關心，我大概也不會有什麼問題，也不會剛好完成上述深入技巧的某幾項 ˊ__&gt;ˋ<br><code>訪問者需要有極大好奇心</code>才行，顯然我大概是需要深入了解才會產生好奇心的人。</p>
+<h2 id="制定訪談大綱"><a href="#制定訪談大綱" class="headerlink" title="制定訪談大綱"></a>制定訪談大綱</h2><p>這part就是最後的20分鐘練習，主題是 – <code>線上學習經驗</code></p>
+<p>大綱內包含</p>
+<figure class="highlight asciidoc"><table><tr><td class="code"><pre><span class="line"><span class="bullet">- </span>研究主題</span><br><span class="line"><span class="bullet">- </span>受訪者背景</span><br><span class="line"><span class="bullet">- </span>依據 AEIOU 的原則研究主題相關事件脈絡</span><br></pre></td></tr></table></figure>
+
+<h2 id="執行訪談"><a href="#執行訪談" class="headerlink" title="執行訪談"></a>執行訪談</h2><p>這一part基本上也是慌亂跑過(到底是多慌XD)<br>但是有前面的經驗之後，這次自我感覺良好<br>雖然還是有問到乾掉，一邊聽受訪者的回覆、一邊記下關鍵字、一邊準備其他深入問題，又得避免問出指向性問題…<br>真的是短時間內多工  </p>
+<p>還好氣質姐姐跳出來救援！<br>完全不慌不忙地慢慢問出問題、加上回顧，還可以寫筆記，好崇拜QQ  </p>
+<h2 id="卡片分類法"><a href="#卡片分類法" class="headerlink" title="卡片分類法"></a>卡片分類法</h2><p>把剛剛訪談取得的資料，抽取與研究主題相關的<strong>具體行為事實</strong>。</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">e.x. 當<span class="strong">_____</span>，我想要<span class="strong">_____</span>，這樣我就能<span class="strong">_____</span>。</span><br></pre></td></tr></table></figure>
+
+<p>小組每個人都要把訪談內容轉成以上範例，寫在便條紙上。<br>然後集合起來貼在某個空位，例如牆壁。</p>
+<p>每個人都能自由地移動便條紙歸類。<br>接下來為每一個類別定義行為目標與需求動機，也可以寫上形容詞。</p>
+<p>最後會有三層(以下虛構)</p>
+<table>
+<thead>
+<tr>
+<th>需求動機/形容詞</th>
+<th>多元的</th>
+<th>社交性的</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>行為目標</td>
+<td>跨領域學習</td>
+<td>尋求協助</td>
+</tr>
+<tr>
+<td>訪談資料</td>
+<td>學程式/周圍人都在學程式/不知道怎麼入門</td>
+<td>認識老師/對課程有疑問/上網發問不容易得到解答</td>
+</tr>
+<tr>
+<td></td>
+<td>學設計/有興趣/沒時間長期學習</td>
+<td>與其他人互動/要認真學習/自己學很孤單</td>
+</tr>
+</tbody></table>
+<p>通常執行者都在做第二層的廣告投放，也就是行為目標。<br>企業願景通常是第一層的形容詞，而真正使用者的行為模式是第三層。<br>執行者如果沒有做使用者調研，企業也沒有傳達公司理念，基本上執行者都是在一個脫鉤的狀態下猜測使用者的需求。  </p>
+<p>另外，每個人寫便條紙的方式、字的大小都不太一樣，造成在理解、分類的時候有點吃力，未來可能得先統一寫法才行。<br>而且便條紙上只能寫一項事情、原因，以免很難歸類。  </p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>這次的體驗工作坊獲益良多，就算平常閱讀相關知識文章、了解一些做法，<strong>實際經驗和紙上談兵還是有差</strong>！<br>但因為時間有點緊迫，讓我這種相對菜的社會人、訪談超新手有點緊張。  </p>
+<p>不過我確實意識到訪談其實不同於一般聊天，儘管聊天也可以聊出一些什麼(譬如上面提到的回馬槍)，但<strong>訪談是有目標的、比較嚴肅的</strong>。<br>工作坊不僅提供機會練習當訪談者，也有機會當受訪者。<br>如果訪談人員不給我一些個人回饋而自顧地往下問問題，會讓我不自覺地緊張起來，但擔任受訪者的人又得避免訪問變成聊很開的狀況，真的是不太容易呀～  </p>
+<p>訪問者得要保有冷靜的好奇心，不斷地挖掘。  </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://willynpi.github.io/2020/01/23/ux-workshop/" data-id="ck6m4ch53000906t6b8o25yrl"
+         class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UX-note-workshop/" rel="tag">UX, note, workshop</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
 <article id="post-explore-django-view-class" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
   
   <div class="article-inner">
@@ -110,7 +323,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://willynpi.github.io/2020/01/10/explore-django-view-class/" data-id="ck56zml2w0005wst6e5ma1xj5"
+      <a data-url="http://willynpi.github.io/2020/01/10/explore-django-view-class/" data-id="ck6m4ch52000606t69b6ubens"
          class="article-share-link">分享</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Django/" rel="tag">Django</a></li></ul>
@@ -203,7 +416,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://willynpi.github.io/2019/12/03/django-centos7-apache/" data-id="ck56zml2l0000wst6aznmf2pp"
+      <a data-url="http://willynpi.github.io/2019/12/03/django-centos7-apache/" data-id="ck6m4ch4w000106t6ebg13oxb"
          class="article-share-link">分享</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Django/" rel="tag">Django</a></li></ul>
@@ -286,7 +499,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://willynpi.github.io/2019/11/15/django-custom-log-handler/" data-id="ck56zml2s0002wst65wkj3uce"
+      <a data-url="http://willynpi.github.io/2019/11/15/django-custom-log-handler/" data-id="ck6m4ch50000406t6arx5b9ym"
          class="article-share-link">分享</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Django-tricks/" rel="tag">Django, tricks</a></li></ul>
