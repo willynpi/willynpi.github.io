@@ -1,76 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html>
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="google-site-verification" content="" />
+  
+  <title>[Django] Custom Log handler</title>
+  
+  <meta name="description" content="Log handler是當系統發生錯誤時，log 處理的方式，譬如把錯誤訊息寫入log檔案或是發信給管理者。
+需求我想要在系統出錯的時候，自動發信給管理員/IT人員。
+Django提供AdminEmailHandler以處理Django Application發生異常時，自動寄信通知管理員。這裡所謂">
   
   
-  
+  <meta property="og:title" content="[Django] Custom Log handler"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>
-    [Django] Custom Log handler |
-    
-    yNotes</title>
-  
-    <link rel="shortcut icon" href="/favicon.ico">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  
-    <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
-  
-  <script src="/js/pace.min.js"></script>
+  <meta property="og:site_name" content="yNotes"/>
+  <link href="/apple-touch-icon-precomposed.png" sizes="180x180" rel="apple-touch-icon-precomposed">
+  <link rel="alternate" href="/atom.xml" title="yNotes" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/m.min.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
 </head>
 
 <body>
-<main class="content">
-  <section class="outer">
-  
+  <a id="top"></a>
+  <div id="main">
+    <div class="main-ctnr">
+      <div class="behind">
+  <a href="/" class="back black-color">
+    <svg class="i-close" viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+        <path d="M2 30 L30 2 M30 30 L2 2"></path>
+    </svg>
+  </a>
+  <div class="description">
+    &nbsp;Bello!
+  </div>
+</div>
 
-<article id="post-django-custom-log-handler" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+  <article class="standard post">
+    <div class="title">
+      
   
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      [Django] Custom Log handler
+    <h1 class="page-title center">
+        [Django] Custom Log handler
     </h1>
   
-  
+
+
+    </div>
+    <div class="meta center">
+      <time datetime="2019-11-15T00:08:16.000Z" itemprop="datePublished">
+  <svg class="i-calendar" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M2 6 L2 30 30 30 30 6 Z M2 15 L30 15 M7 3 L7 9 M13 3 L13 9 M19 3 L19 9 M25 3 L25 9"></path>
+  </svg>
+  &nbsp;
+  2019-11-15
+</time>
 
 
 
 
-      </header>
+
     
+    &nbsp;
+    <svg class="i-tag" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+      <circle cx="24" cy="8" r="2"></circle>
+      <path d="M2 18 L18 2 30 2 30 14 14 30 Z"></path>
+    </svg>
+    &nbsp;
+    <a href="/tags/Django-tricks/">Django, tricks</a>
 
-    
-      <div class="article-meta">
-        <a href="/2019/11/15/django-custom-log-handler/" class="article-date">
-  <time datetime="2019-11-15T00:08:16.000Z" itemprop="datePublished">2019-11-15</time>
-</a>
-        
-      </div>
-    
 
+    </div>
+    <hr>
     
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#需求"><span class="toc-text">需求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#研究"><span class="toc-text">研究</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#實作"><span class="toc-text">實作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#References"><span class="toc-text">References</span></a></li></ol>
+    
+    <div class="picture-container">
       
-    <div class="tocbot"></div>
-
-
-
-
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-        <p>Log handler是當系統發生錯誤時，log 處理的方式，譬如把錯誤訊息寫入log檔案或是發信給管理者。</p>
+    </div>
+    <p>Log handler是當系統發生錯誤時，log 處理的方式，譬如把錯誤訊息寫入log檔案或是發信給管理者。</p>
 <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>我想要在系統出錯的時候，自動發信給管理員/IT人員。</p>
 <p>Django提供<code>AdminEmailHandler</code>以處理Django Application發生異常時，自動寄信通知管理員。<br>這裡所謂的管理員是只settings裡面<code>ADMIN</code>參數設定的資料，也表示未來要更改管理員就要動到code，當然如果有統一收信窗口就比較沒有影響。  </p>
 <p>但我的情況不是這樣，又因為我習慣用Admin site當作管理資料的GUI，superuser的角色只會給IT人員使用，所以就打算寫一個能夠從<code>UserModel</code>取得<code>superuser</code>當作收件人的log handler.  </p>
@@ -93,169 +105,67 @@
 <p>但是因為他本來就是傳送一整份degug頁面(就是DEBUG=True會看見的黃頁)<br>，我也沒有特別去改寫要傳送的內容，所以email內包含很詳細的bug追蹤，是有點危險的喔。</p>
 <h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p><a href="https://docs.djangoproject.com/en/2.2/topics/logging/#django.utils.log.AdminEmailHandler" target="_blank" rel="noopener">Django docs - AdminEmailHandler</a><br><a href="https://stackoverflow.com/questions/29744016/how-to-lazy-load-a-model-in-a-managers-to-stop-circular-imports" target="_blank" rel="noopener">Stackoverflow - How to Lazy Load a model in a managers to stop circular imports?</a><br><a href="https://myapollo.com.tw/zh-tw/django-customize-logging-handler/" target="_blank" rel="noopener">寫得更詳盡 - Django 打造 logging handler 將 exception 送到 Slack</a></p>
 
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://willynpi.github.io/2019/11/15/django-custom-log-handler/" data-id="ck6mao8620005bvt6gv055t08"
-         class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Django-tricks/" rel="tag">Django, tricks</a></li></ul>
 
-    </footer>
-
-  </div>
-
-  
-    
-  <nav class="article-nav">
-    
-      <a href="/2019/12/03/django-centos7-apache/" class="article-nav-link">
-        <strong class="article-nav-caption">最新文章</strong>
-        <div class="article-nav-title">
-          
-            [Django] CentOS 7 &amp; Apache
-          
-        </div>
-      </a>
-    
-    
-  </nav>
-
-
-  
-
-  
-    
-  <div class="gitalk" id="gitalk-container"></div>
-  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
-  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-  <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
-  <script type="text/javascript">
-    var gitalk = new Gitalk({
-      clientID: 'bb02e2e7c6102706d204',
-      clientSecret: '52698361139734dd90e7d2412e01aa1f4dcfb572',
-      repo: 'willynpi.github.io',
-      owner: 'willynpi',
-      admin: ['willynpi'],
-      // id: location.pathname,      // Ensure uniqueness and length less than 50
-      id: md5(location.pathname),
-      distractionFreeMode: false,  // Facebook-like distraction free mode
-      pagerDirection: 'last'
-    })
-
-  gitalk.render('gitalk-container')
+  </article>
   </script>
-
-  
-
-</article>
-
-
-
-</section>
-  <footer class="footer">
-  <div class="outer">
-    <div class="float-right">
-      <ul class="list-inline">
-  
-    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
-  
-</ul>
-    </div>
-    <ul class="list-inline">
-      <li>&copy; 2020 yNotes</li>
-      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
-      <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean" target="_blank" rel="noopener">Ocean</a></li>
-    </ul>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+  </script>
+  <div class="busuanzi center">
+    页阅读量:&nbsp;<span id="busuanzi_value_page_pv"></span>&nbsp;・&nbsp;
+    站访问量:&nbsp;<span id="busuanzi_value_site_pv"></span>&nbsp;・&nbsp;
+    站访客数:&nbsp;<span id="busuanzi_value_site_uv"></span>
   </div>
-</footer>
 
-</main>
 
-<aside class="sidebar sidebar-specter">
-  
-    <button class="navbar-toggle"></button>
-<nav class="navbar">
-  
-    <div class="logo">
-      <a href="/"><img src="/images/logo-y.svg" alt="yNotes"></a>
+    
+
+
+
+
+
     </div>
-  
-  <ul class="nav nav-main">
-    
-      <li class="nav-item">
-        <a class="nav-item-link" href="/">Home</a>
-      </li>
-    
-      <li class="nav-item">
-        <a class="nav-item-link" href="/archives">Archives</a>
-      </li>
-    
-      <li class="nav-item">
-        <a class="nav-item-link" href="/gallery">Gallery</a>
-      </li>
-    
-      <li class="nav-item">
-        <a class="nav-item-link" href="/about">About</a>
-      </li>
-    
-    <li class="nav-item">
-      <a class="nav-item-link nav-item-search" title="搜尋">
-        <i class="fe fe-search"></i>
-        搜尋
-      </a>
-    </li>
-  </ul>
-</nav>
-<nav class="navbar navbar-bottom">
-  <ul class="nav">
-    <li class="nav-item">
-      <div class="totop" id="totop">
-  <i class="fe fe-rocket"></i>
+  </div>
+  <footer class="page-footer"><div class="clearfix">
 </div>
-    </li>
-    <li class="nav-item">
-      
-        <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
-          <i class="fe fe-feed"></i>
+<div class="right-foot">
+    <div class="firstrow">
+        <a href="#top" target="_self">
+        <svg class="i-caret-right" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+            <path d="M10 30 L26 16 10 2 Z"></path>
+        </svg>
         </a>
-      
-    </li>
-  </ul>
-</nav>
-<div class="search-form-wrap">
-  <div class="local-search local-search-plugin">
-  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
-  <div id="local-search-result" class="local-search-result"></div>
+        © XXX 2016-2020
+    </div>
+    <div class="secondrow">
+        <a href="https://github.com/gaoryrt/hexo-theme-pln" target="_blank" rel="noopener">
+        Theme Pln
+        </a>
+    </div>
 </div>
+<div class="clearfix">
 </div>
-  </aside>
-  <script src="/js/jquery-2.0.3.min.js"></script>
-<script src="/js/jquery.justifiedGallery.min.js"></script>
-<script src="/js/lazyload.min.js"></script>
-<script src="/js/busuanzi-2.3.pure.min.js"></script>
+</footer>
+  <script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+<script src="/js/search.min.js"></script>
+<script type="text/javascript">
 
-  <script src="/fancybox/jquery.fancybox.min.js"></script>
-
+// disqus scripts
 
 
-  <script src="/js/tocbot.min.js"></script>
-  <script>
-    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
-    tocbot.init({
-      tocSelector: '.tocbot',
-      contentSelector: '.article-entry',
-      headingSelector: 'h1, h2, h3, h4, h5, h6',
-      hasInnerContainers: true,
-      scrollSmooth: true,
-      positionFixedSelector: '.tocbot',
-      positionFixedClass: 'is-position-fixed',
-      fixedSidebarOffset: 'auto',
-    });
-  </script>
+// dropdown scripts
+$(".dropdown").click(function(event) {
+  var current = $(this);
+  event.stopPropagation();
+  $(current).children(".dropdown-content")[($(current).children(".dropdown-content").hasClass("open"))?'removeClass':'addClass']("open")
+});
+$(document).click(function(){
+    $(".dropdown-content").removeClass("open");
+})
 
+var path = "/search.xml";
+searchFunc(path, 'local-search-input', 'local-search-result');
 
-<script src="/js/ocean.js"></script>
+</script>
 
 </body>
 </html>

@@ -1,617 +1,471 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html>
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="google-site-verification" content="" />
+  
+  <title>yNotes</title>
+  
   
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>
-    
-    yNotes</title>
-  
-    <link rel="shortcut icon" href="/favicon.ico">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  
-    <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
-  
-  <script src="/js/pace.min.js"></script>
+  <meta property="og:site_name" content="yNotes"/>
+  <link href="/apple-touch-icon-precomposed.png" sizes="180x180" rel="apple-touch-icon-precomposed">
+  <link rel="alternate" href="/atom.xml" title="yNotes" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/m.min.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
 </head>
 
 <body>
-<main class="content">
-  <section class="jumbotron">
-  <div class="video">
-    
-      <div class="video-frame">
-        <img src="/images/ocean/overlay-hero.png" alt="Decorative image frame">
-      </div>
-    
-    <div class="video-media">
-      <img src="/images/movie.jpg">
+  <a id="top"></a>
+  <div id="main">
+    <div class="main-ctnr">
+      <nav class="navbar">
+  <div class="nav-container">
+  <div class="nav navbar-nav navbar-left">
+    <div class="navbar-header">
+      <a href="/" class="navbar-brand">XXX</a>
     </div>
-    <div class="video-inner text-center text-white">
-      <h1><a href="/">yNotes</a></h1>
-      <p>山型 ｜ 藝 ｜ 程式</p>
-    </div>
-    <div class="video-learn-more">
-      <a class="anchor" href="#landingpage"><i class="fe fe-mouse"></i></a>
-    </div>
-  </div>
-</section>
-
-<div id="landingpage">
-  <section class="outer">
-  <article class="articles">
     
-    <h1 class="page-type-title"></h1>
-
-    
-      
-        
-
-<article id="post-Django-dynamic-urls" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-  
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/02/14/Django-dynamic-urls/">[Django] Dynamic URLs</a>
-    </h2>
-  
-  
-
-
-
-
-      </header>
-    
-
-    
-      <div class="article-meta">
-        <a href="/2020/02/14/Django-dynamic-urls/" class="article-date">
-  <time datetime="2020-02-14T11:55:47.000Z" itemprop="datePublished">2020-02-14</time>
-</a>
-        
-      </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-        <h1 id="Django-Dynamic-URLs"><a href="#Django-Dynamic-URLs" class="headerlink" title="Django Dynamic URLs"></a>Django Dynamic URLs</h1><p>Have you ever considered to create dynamic urls in Django?<br>Not the url parameters but the ones which are gernerated according to data from a database or a file.  </p>
-<h2 id="Concepts"><a href="#Concepts" class="headerlink" title="Concepts"></a>Concepts</h2><p>Normally, we create an url path in <code>urls.py</code> and map each url to a view function or class:  </p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">path(<span class="string">'demo'</span>, app.demo, related_name=<span class="string">"demo"</span>)</span><br><span class="line">path(<span class="string">'demo_class'</span>, app.DemoClass.as_view(), related_name=<span class="string">"demo_class"</span>)</span><br></pre></td></tr></table></figure>
-
-<p>The path function needs url string, view function and other parameters.<br>The point is how do we make the url string and the view function dynamic?  </p>
-<h2 id="Dynamic-Import"><a href="#Dynamic-Import" class="headerlink" title="Dynamic Import"></a>Dynamic Import</h2><p>The module <code>imorptlib</code> offers you to import module by moudle’s name.  </p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">module = importlib.import_module(<span class="string">'sys'</span>)</span><br><span class="line"><span class="comment"># &lt;module 'sys' (built-in)&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>As you can see, module’s name is a string, that means we have more flexibilty to get module we want.  </p>
-<p>This is how to import the views:  </p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">view_module = importlib.import_module(<span class="string">'%s.views'</span> % app_name)</span><br></pre></td></tr></table></figure>
-
-<h2 id="Get-View"><a href="#Get-View" class="headerlink" title="Get View"></a>Get View</h2><p>Next step is to get the view from view_module.<br>A view is an attribute of the view_module, you can see the attribute list using built-in function <code>dir()</code>.  </p>
-<p>Use built-in function <code>getattr()</code> to get the view.  </p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">view = getattr(view_module, <span class="string">'myView'</span>)</span><br></pre></td></tr></table></figure>
-
-<h2 id="CBV-or-FBV"><a href="#CBV-or-FBV" class="headerlink" title="CBV or FBV"></a>CBV or FBV</h2><p>Then we have to decide the view is CBV or FBV, the biggest difference in urlpatterns is the <code>is_view()</code> function.  </p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">view_function = view.as_view() <span class="keyword">if</span> inspect.isclass(view) <span class="keyword">else</span> view</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Return"><a href="#Return" class="headerlink" title="Return"></a>Return</h2><p>For the case of Django build-in path method <code>include</code>:  </p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">include(<span class="string">'app.urls'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#(&lt;module 'app.urls' from 'E:\\myproject\\app\\urls.py'&gt;, None, None)</span></span><br></pre></td></tr></table></figure>
-
-<p>Last two parameters are <strong>app_name</strong> and <strong>namesapce</strong>.<br>That means we should add these two parameters when returning the patterns.  </p>
-<p>All in all,  </p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">programs = (</span><br><span class="line">    (<span class="string">'app'</span>, <span class="string">'viewa'</span>),</span><br><span class="line">    (<span class="string">'app'</span>, <span class="string">'viewb'</span>),</span><br><span class="line">    (<span class="string">'common'</span>, <span class="string">'viewc'</span>),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">dynamic_urls(setting):</span><br><span class="line">    urlpatters = []</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> sett <span class="keyword">in</span> setting:</span><br><span class="line">        module_name, view_name = sett</span><br><span class="line">        url = <span class="string">'%s/%s'</span> % (module_name, view_name)</span><br><span class="line">        <span class="comment"># depends on the rule you use</span></span><br><span class="line">        module = importlib.import_module(<span class="string">'%s.views'</span> % module_name)</span><br><span class="line">        <span class="comment"># dynamic import</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            view = getattr(module, view_name)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            view = view.as_view() <span class="keyword">if</span> inspect.isclass(view) <span class="keyword">else</span> view</span><br><span class="line">            urlpatterns.append(</span><br><span class="line">                path(url, view)</span><br><span class="line">            )</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line">    <span class="keyword">return</span> urlpatterns, <span class="string">'pds'</span>, <span class="string">'pds'</span></span><br><span class="line"></span><br><span class="line">dynamic_urls(programs)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ([&lt;URLPattern 'app/viewa'&gt;, &lt;URLPattern 'app/viewb'&gt;,</span></span><br><span class="line"><span class="comment">#   &lt;URLPattern 'common/viewc'&gt;, None, None)</span></span><br></pre></td></tr></table></figure>
-
-<p>Then you can do something like this in your another urls.py:  </p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">path(<span class="string">'demo/'</span>, dynamic_urls(setting))</span><br></pre></td></tr></table></figure>
-
-<p>;-)  </p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://willynpi.github.io/2020/02/14/Django-dynamic-urls/" data-id="ck6mao866000abvt6d7pibmy4"
-         class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Django-hack/" rel="tag">Django, hack</a></li></ul>
-
-    </footer>
 
   </div>
-
-  
-
-  
-
-</article>
-
-
-
-      
-        
-
-<article id="post-ux-workshop" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-  
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/01/23/ux-workshop/">[UX] 用戶訪談的入門體驗</a>
-    </h2>
-  
-  
-
-
-
-
-      </header>
-    
-
-    
-      <div class="article-meta">
-        <a href="/2020/01/23/ux-workshop/" class="article-date">
-  <time datetime="2020-01-22T16:05:17.407Z" itemprop="datePublished">2020-01-23</time>
-</a>
-        
-      </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-        <h1 id="用戶訪談的入門體驗-UX-工作坊"><a href="#用戶訪談的入門體驗-UX-工作坊" class="headerlink" title="用戶訪談的入門體驗 UX 工作坊"></a>用戶訪談的入門體驗 UX 工作坊</h1><p>之前一直想參加UX相關主題的工作坊，但近一年似乎滿稀少的，查到很多活動都是前年或是剛錯過QQ<br>上個月突然在睡前滑到<a href="https://www.facebook.com/groups/uxui.taichung/" target="_blank" rel="noopener">UI/UX臺中聚的FB社團</a>，也正好在不久的將來有一場<code>用戶訪談的入門體驗 UX 工作坊</code>，then here I am.</p>
-<p>本來怕自己尷尬病發作，緊張就腦袋空白的我會不會搞砸了小組練習？<br>結果是我多想了  </p>
-<p>Soking 是講師，他在<a href="https://medium.com/@soking" target="_blank" rel="noopener">Ｍeduim</a>發了很多關於UX的文章。  </p>
-<p>他一開始就問大家誰當過訪問者與受訪者，質性研究與量化研究的差別在哪裡？  </p>
-<h2 id="質性研究-v-s-量化研究"><a href="#質性研究-v-s-量化研究" class="headerlink" title="質性研究 v.s. 量化研究"></a>質性研究 v.s. 量化研究</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">：質性研究花的時間比較長，不像量化研究一樣能一把撒下等待收網。</span><br><span class="line">：質性研究像是在做收斂，由多個東西之中求出相同的，量化研究就相反。</span><br><span class="line">：質性研究可以挖出一些量化研究無法知道的事情。</span><br></pre></td></tr></table></figure>
-
-<p>質性研究的資料搜集方法有很多種，這個工作坊只專注在訪談法上面。<br>訪談分為結構化、半結構化/脈絡。  </p>
-<ul>
-<li>結構化的信效度比較高、訪談人員比較容易被訓練，因為訪談過程是固定流程的。  </li>
-<li>半結構化/脈絡也稱作師徒訪談，因為訪談者必須像是徒弟一樣向受訪者師父請教，記得研究目的後，就當自己是<em>完全無知</em>。  </li>
-</ul>
-<h2 id="破冰練習"><a href="#破冰練習" class="headerlink" title="破冰練習"></a>破冰練習</h2><p>兩人一組的五分鐘小練習，主要是希望引導受訪者談論自己與物品的關係。</p>
-<p>開始之前，有很重要的提問原則： <strong>保持冷靜、維持開放性、避免指向性</strong>。</p>
-<p>在有點慌亂之下，我和隔壁氣質姐姐開始了訪談練習，我是訪談者，她是受訪者。<br>完全是我的第一次訪談經驗，我發現自己好像很容易就跟受訪者開聊起來XD</p>
-<h2 id="適合脈絡訪談的五種角色"><a href="#適合脈絡訪談的五種角色" class="headerlink" title="適合脈絡訪談的五種角色"></a>適合脈絡訪談的五種角色</h2><figure class="highlight asciidoc"><table><tr><td class="code"><pre><span class="line"><span class="bullet">- </span>利害關係人</span><br><span class="line"><span class="bullet">- </span>同事</span><br><span class="line"><span class="bullet">- </span>購買人/使用者/目標用戶</span><br><span class="line"><span class="bullet">- </span>供應商</span><br><span class="line"><span class="bullet">- </span>專家</span><br></pre></td></tr></table></figure>
-
-<h2 id="深入提問技巧"><a href="#深入提問技巧" class="headerlink" title="深入提問技巧"></a>深入提問技巧</h2><p>這part換了一個夥伴，選了一個主題進行練習 – <code>在便利商店結帳時，用什麼方式付款？</code><br>練習他列出的深入技巧。  </p>
-<p>在一開始提問時，可以<strong>從空泛的、一般的問題切入，再更深入</strong><br>可以在一般問題與深入問題之間切換，最好是取得<strong>受訪者實際操作的行為，遠比主觀感受好!</strong></p>
-<p>我在這裡一樣保持慌亂(?)而且一樣要聊起來了XD<br>但是比剛剛冷靜多了!<br>不過如果不是因為自己對於超商結帳方式小有關心，我大概也不會有什麼問題，也不會剛好完成上述深入技巧的某幾項 ˊ__&gt;ˋ<br><code>訪問者需要有極大好奇心</code>才行，顯然我大概是需要深入了解才會產生好奇心的人。</p>
-<h2 id="制定訪談大綱"><a href="#制定訪談大綱" class="headerlink" title="制定訪談大綱"></a>制定訪談大綱</h2><p>這part就是最後的20分鐘練習，主題是 – <code>線上學習經驗</code></p>
-<p>大綱內包含</p>
-<figure class="highlight asciidoc"><table><tr><td class="code"><pre><span class="line"><span class="bullet">- </span>研究主題</span><br><span class="line"><span class="bullet">- </span>受訪者背景</span><br><span class="line"><span class="bullet">- </span>依據 AEIOU 的原則研究主題相關事件脈絡</span><br></pre></td></tr></table></figure>
-
-<h2 id="執行訪談"><a href="#執行訪談" class="headerlink" title="執行訪談"></a>執行訪談</h2><p>這一part基本上也是慌亂跑過(到底是多慌XD)<br>但是有前面的經驗之後，這次自我感覺良好<br>雖然還是有問到乾掉，一邊聽受訪者的回覆、一邊記下關鍵字、一邊準備其他深入問題，又得避免問出指向性問題…<br>真的是短時間內多工  </p>
-<p>還好氣質姐姐跳出來救援！<br>完全不慌不忙地慢慢問出問題、加上回顧，還可以寫筆記，好崇拜QQ  </p>
-<h2 id="卡片分類法"><a href="#卡片分類法" class="headerlink" title="卡片分類法"></a>卡片分類法</h2><p>把剛剛訪談取得的資料，抽取與研究主題相關的<strong>具體行為事實</strong>。</p>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">e.x. 當<span class="strong">_____</span>，我想要<span class="strong">_____</span>，這樣我就能<span class="strong">_____</span>。</span><br></pre></td></tr></table></figure>
-
-<p>小組每個人都要把訪談內容轉成以上範例，寫在便條紙上。<br>然後集合起來貼在某個空位，例如牆壁。</p>
-<p>每個人都能自由地移動便條紙歸類。<br>接下來為每一個類別定義行為目標與需求動機，也可以寫上形容詞。</p>
-<p>最後會有三層(以下虛構)</p>
-<table>
-<thead>
-<tr>
-<th>需求動機/形容詞</th>
-<th>多元的</th>
-<th>社交性的</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>行為目標</td>
-<td>跨領域學習</td>
-<td>尋求協助</td>
-</tr>
-<tr>
-<td>訪談資料</td>
-<td>學程式/周圍人都在學程式/不知道怎麼入門</td>
-<td>認識老師/對課程有疑問/上網發問不容易得到解答</td>
-</tr>
-<tr>
-<td></td>
-<td>學設計/有興趣/沒時間長期學習</td>
-<td>與其他人互動/要認真學習/自己學很孤單</td>
-</tr>
-</tbody></table>
-<p>通常執行者都在做第二層的廣告投放，也就是行為目標。<br>企業願景通常是第一層的形容詞，而真正使用者的行為模式是第三層。<br>執行者如果沒有做使用者調研，企業也沒有傳達公司理念，基本上執行者都是在一個脫鉤的狀態下猜測使用者的需求。  </p>
-<p>另外，每個人寫便條紙的方式、字的大小都不太一樣，造成在理解、分類的時候有點吃力，未來可能得先統一寫法才行。<br>而且便條紙上只能寫一項事情、原因，以免很難歸類。  </p>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>這次的體驗工作坊獲益良多，就算平常閱讀相關知識文章、了解一些做法，<strong>實際經驗和紙上談兵還是有差</strong>！<br>但因為時間有點緊迫，讓我這種相對菜的社會人、訪談超新手有點緊張。  </p>
-<p>不過我確實意識到訪談其實不同於一般聊天，儘管聊天也可以聊出一些什麼(譬如上面提到的回馬槍)，但<strong>訪談是有目標的、比較嚴肅的</strong>。<br>工作坊不僅提供機會練習當訪談者，也有機會當受訪者。<br>如果訪談人員不給我一些個人回饋而自顧地往下問問題，會讓我不自覺地緊張起來，但擔任受訪者的人又得避免訪問變成聊很開的狀況，真的是不太容易呀～  </p>
-<p>訪問者得要保有冷靜的好奇心，不斷地挖掘。  </p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://willynpi.github.io/2020/01/23/ux-workshop/" data-id="ck6mao8650007bvt610o7361z"
-         class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UX-note-workshop/" rel="tag">UX, note, workshop</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-
-</article>
-
-
-
-      
-        
-
-<article id="post-explore-django-view-class" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-  
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2020/01/10/explore-django-view-class/">explore-django-view-class</a>
-    </h2>
-  
-  
-
-
-
-
-      </header>
-    
-
-    
-      <div class="article-meta">
-        <a href="/2020/01/10/explore-django-view-class/" class="article-date">
-  <time datetime="2020-01-09T17:08:41.000Z" itemprop="datePublished">2020-01-10</time>
-</a>
-        
-      </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-        <h1 id="Python-OOP"><a href="#Python-OOP" class="headerlink" title="Python OOP"></a>Python OOP</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class A:</span><br><span class="line">    </span><br><span class="line">    class_attr = &apos;ca&apos;</span><br><span class="line">    </span><br><span class="line">    def __init__(self, instance_attr):</span><br><span class="line">        self.ia = instance_attr</span><br><span class="line"></span><br><span class="line">    def get_attributes(self):</span><br><span class="line">        print(self.class_attr)</span><br><span class="line">        print(self.ia)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">a = A(&apos;abc&apos;)</span><br><span class="line">a.get_attributes()</span><br><span class="line"></span><br><span class="line"># cv</span><br><span class="line"># abc</span><br></pre></td></tr></table></figure>
-
-<h2 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span>:</span></span><br><span class="line">    bark = <span class="string">'汪'</span></span><br><span class="line">    legs = <span class="number">4</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name, age)</span>:</span></span><br><span class="line">        self.name = name</span><br><span class="line">        self.age = age</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">intro</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">'我叫%s, 我%s歲。 %s!'</span> % (self.name, self.age, self.bark))</span><br><span class="line">    </span><br><span class="line">willy = Dog(<span class="string">'Willy'</span>, <span class="number">7</span>)</span><br><span class="line">joe = Dog(<span class="string">'Joe'</span>, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">willy.intro()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 我叫Willy, 我7歲。 汪!</span></span><br><span class="line"></span><br><span class="line">joe.age = <span class="number">1</span></span><br><span class="line">joe.bard = <span class="string">'...'</span></span><br><span class="line">joe.intro()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 我叫Joe, 我1歲。 ...!</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="繼承"><a href="#繼承" class="headerlink" title="繼承"></a>繼承</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreeLegDog</span><span class="params">(Dog)</span>:</span></span><br><span class="line">    legs = <span class="number">3</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name, age, cause)</span>:</span></span><br><span class="line">        super().__init__(name, age)</span><br><span class="line">        self.cause = cause</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">tell_me_why</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">'我只有%s支腳，因為我%s。'</span> % (self.legs, self.cause))</span><br><span class="line">        </span><br><span class="line">leo = ThreeLegDog(<span class="string">'Leo'</span>, <span class="number">10</span>, <span class="string">'生病'</span>)</span><br><span class="line"></span><br><span class="line">leo.tell_me_why()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 我只有3支腳，因為我生病。</span></span><br></pre></td></tr></table></figure>
-
-
-<h2 id="由右往左"><a href="#由右往左" class="headerlink" title="由右往左"></a>由右往左</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ALotOfWater</span>:</span></span><br><span class="line">    </span><br><span class="line">    amount = <span class="string">'5L'</span></span><br><span class="line">    </span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">status</span><span class="params">()</span>:</span></span><br><span class="line">        print(<span class="string">'水喝太多，我想尿尿!'</span>)</span><br><span class="line">        </span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">drink</span><span class="params">(cls)</span>:</span></span><br><span class="line">        print(<span class="string">'我喝了%s的水!'</span> % cls.amount)</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">intro</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">'我叫%s....帶我去尿尿 QQ'</span> % self.name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WaterDog</span><span class="params">(ALotOfWater, Dog)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line">    </span><br><span class="line">wayne = WaterDog(<span class="string">'Wayne'</span>, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">wayne.status()</span><br><span class="line"><span class="comment">#水喝太多，我想尿尿</span></span><br><span class="line"></span><br><span class="line">wayne.intro()</span><br><span class="line"><span class="comment">#我叫Wayne....帶我去尿尿 QQ</span></span><br><span class="line"></span><br><span class="line">ALotOfWater.status()</span><br><span class="line"><span class="comment">#水喝太多，我想尿尿</span></span><br><span class="line"></span><br><span class="line">ALotOfWater.drink()</span><br><span class="line"><span class="comment">#我喝了5L的水!</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="Django-View"><a href="#Django-View" class="headerlink" title="Django View"></a>Django View</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">View</span>:</span></span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line"><span class="meta">    @classonlymethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">as_view</span><span class="params">(cls, **initkwargs)</span>:</span></span><br><span class="line">        ...</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">view</span><span class="params">(request, *args, **kwargs)</span>:</span></span><br><span class="line">            ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> view</span><br><span class="line">```    </span><br><span class="line"></span><br><span class="line"><span class="comment">## ListView 繼承 View</span></span><br><span class="line"></span><br><span class="line">```python</span><br><span class="line"></span><br><span class="line"><span class="comment"># views.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BlogListView</span><span class="params">(ListView)</span>:</span></span><br><span class="line">	model = Blog</span><br><span class="line">	paginate_by = <span class="number">5</span></span><br><span class="line">	context_object_name = <span class="string">'blogs'</span></span><br><span class="line">	template_name = <span class="string">'blog/blogs.html'</span></span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"><span class="comment"># urls.py</span></span><br><span class="line"></span><br><span class="line">url_patterns = [ </span><br><span class="line">    path(<span class="string">'blogs'</span>, BlogListView.as_view(), name=<span class="string">"blog_list"</span>),</span><br><span class="line">    ...</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># blog/blogs.html</span><br><span class="line"></span><br><span class="line">&#123;% for blog in blogs %&#125;</span><br><span class="line">    &lt;li&gt;</span><br><span class="line">        &lt;a href=&quot;/blog/&#123;&#123;blog.pk&#125;&#125;&quot;&gt;&#123;&#123;blog.title&#125;&#125;&lt;/a&gt;</span><br><span class="line">        (&#123;&#123;blog.publish_date|date:&apos;Y-m-d H:i&apos;&#125;&#125;) - </span><br><span class="line">        &lt;a href=&quot;/blog/blogger/&#123;&#123;blog.blogger.pk&#125;&#125;&quot;&gt;&#123;&#123;blog.blogger&#125;&#125;&lt;/a&gt;</span><br><span class="line">    &lt;/li&gt;</span><br><span class="line">&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Why"><a href="#Why" class="headerlink" title="Why?"></a>Why?</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ListView</span><span class="params">(MultipleObjectTemplateResponseMixin, BaseListView)</span>:</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="comment"># ListView 繼承了兩個東西</span></span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseListView</span><span class="params">(MultipleObjectMixin, View)</span>:</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="comment"># BaseListView 也繼承了兩個東西</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultipleObjectTemplateResponseMixin</span><span class="params">(TemplateResponseMixin)</span>:</span></span><br><span class="line">    <span class="string">"""Mixin for responding with a template and list of objects."""</span></span><br><span class="line">    template_name_suffix = <span class="string">'_list'</span></span><br><span class="line">    <span class="comment"># 這裡可以知道default template名稱會有一個固定的結尾 -&gt; blog_list.html</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_template_names</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Return a list of template names to be used for the request. Must return</span></span><br><span class="line"><span class="string">        a list. May not be called if render_to_response is overridden.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            names = super().get_template_names()</span><br><span class="line">            <span class="comment">#但是他會先看看template_name有沒有值</span></span><br><span class="line">        <span class="keyword">except</span> ImproperlyConfigured:</span><br><span class="line">            <span class="comment"># If template_name isn't specified, it's not a problem --</span></span><br><span class="line">            <span class="comment"># we just start with an empty list.</span></span><br><span class="line">            names = []</span><br><span class="line">        ...</span><br><span class="line">        </span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TemplateResponseMixin</span>:</span></span><br><span class="line">    <span class="string">"""A mixin that can be used to render a template."""</span></span><br><span class="line">    template_name = <span class="literal">None</span></span><br><span class="line">    template_engine = <span class="literal">None</span></span><br><span class="line">    response_class = TemplateResponse</span><br><span class="line">    content_type = <span class="literal">None</span></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultipleObjectMixin</span><span class="params">(ContextMixin)</span>:</span></span><br><span class="line">    <span class="string">"""A mixin for views manipulating multiple objects."""</span></span><br><span class="line">    allow_empty = <span class="literal">True</span></span><br><span class="line">    queryset = <span class="literal">None</span></span><br><span class="line">    model = <span class="literal">None</span></span><br><span class="line">    paginate_by = <span class="literal">None</span></span><br><span class="line">    paginate_orphans = <span class="number">0</span></span><br><span class="line">    context_object_name = <span class="literal">None</span></span><br><span class="line">    paginator_class = Paginator</span><br><span class="line">    page_kwarg = <span class="string">'page'</span></span><br><span class="line">    ordering = <span class="literal">None</span></span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 簡單來說，這個class會先判斷有沒有queryset</span></span><br><span class="line">    <span class="comment"># 不然就使用model得到所有資料 -&gt; model.objects.all()。</span></span><br><span class="line">    <span class="comment"># 都沒有就會噴錯!</span></span><br><span class="line">    <span class="comment"># </span></span><br><span class="line">    <span class="comment"># 然後塞進context裡面使用default值: object_list，除非context_object_name有值。</span></span><br><span class="line">    <span class="comment"># context就是給template的資料</span></span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ContextMixin</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    A default context mixin that passes the keyword arguments received by</span></span><br><span class="line"><span class="string">    get_context_data() as the template context.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    extra_context = <span class="literal">None</span></span><br></pre></td></tr></table></figure>
-
-
-<p>各種追Code.<br>阿彌陀佛  </p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://willynpi.github.io/2020/01/10/explore-django-view-class/" data-id="ck6mao868000bbvt6eg7q70h9"
-         class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Django/" rel="tag">Django</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-
-</article>
-
-
-
-      
-        
-
-<article id="post-django-centos7-apache" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-  
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2019/12/03/django-centos7-apache/">[Django] CentOS 7 &amp; Apache</a>
-    </h2>
-  
-  
-
-
-
-
-      </header>
-    
-
-    
-      <div class="article-meta">
-        <a href="/2019/12/03/django-centos7-apache/" class="article-date">
-  <time datetime="2019-12-03T12:46:55.000Z" itemprop="datePublished">2019-12-03</time>
-</a>
-        
-      </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-        <p>每次要安裝東西的時候都覺得   <strong>很棒</strong>。</p>
-<p>這次是把Django 架在 CentOS 7 搭配 Apache 之上<br>這種文章隨便搜都是一大把，但無奈每個人的狀況都不一樣<br>何況有些都僅只有步驟，每次都讓我有”好像別人安裝都很順”的錯覺(當然這可能不是錯覺 … )。<br>最後只好自己去看官方文件檔，但你知道的，都是密密麻麻的英文字！<br>我又有讀很快結果漏看某些重要訊息的毛病 （ˊ_____&gt;ˋ）  </p>
-<p>為了怕弄壞，我先弄了個VMware來做這件事。  </p>
-<h2 id="python"><a href="#python" class="headerlink" title="python"></a>python</h2><p>首先裝python有兩種途徑，一個是從資源庫，一個是透過源碼。<br>前面的簡單，後面的就是自己對安裝的東西比較有掌控度，但yum不會記錄到這一筆安裝。<br>最最一開始，我就是按表抄課的走第二個方式<br>但很抱歉，文章是之後才補的，所以實際上遇到什麼困難我以遺忘，或是害怕再想起來。</p>
-<p>只能說用資源庫安裝沒什麼問題，很棒。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ yum install -y https://centos7.iuscommunity.org/ius-release.rpm</span><br><span class="line">$ yum update</span><br><span class="line">$ yum install python36u python36u-libs python36u-devel python36u-pip</span><br></pre></td></tr></table></figure>
-
-<p>完成後可立即使用python3.6。👍<br>然後安裝virtualenv，先升級</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ python3.6 -m pip install --upgrade pip</span><br><span class="line">$ python3.6 -m pip install virtualenv</span><br></pre></td></tr></table></figure>
-
-<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>必須是<code>2.0</code>, <code>2.2</code> 或 <code>2.4</code>版本。</p>
-<h2 id="mod-wsgi"><a href="#mod-wsgi" class="headerlink" title="mod_wsgi"></a>mod_wsgi</h2><p>再來是討M的<code>mod_wsgi</code>，有很多文章都用<code>yum install mod_wsgi</code><br>但是如果你用的是<em>python3</em>開發，那就會跟我一樣卡在絕望深谷，因為它預設就是使用<em>python2.7</em>。</p>
-<p>有兩種安裝方式：源碼跟python包，我選源碼。</p>
-<p><strong>會需要gcc for C compile</strong></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ yum install gcc</span><br><span class="line">$ wget https://github.com/GrahamDumpleton/mod_wsgi/archive/4.6.5.tar.gz</span><br><span class="line">$ tar xzf 4.6.5.tar.gz</span><br><span class="line">$ <span class="built_in">cd</span> mod_wsgi-4.6.5</span><br><span class="line">$ ./configure --with-python=`<span class="built_in">which</span> python3.6`</span><br><span class="line">$ make</span><br><span class="line">$ make install</span><br><span class="line"></span><br><span class="line">＃ 最後產出 wsgi_module <span class="string">'/usr/lib64/httpd/modules/mod_wsgi.so'</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="httpd-conf"><a href="#httpd-conf" class="headerlink" title="httpd.conf"></a>httpd.conf</h2><p>用Apache伺服python網頁有兩種模式，<code>嵌入式</code>與<code>Daemon</code>。<br>主要差別在於</p>
-<ul>
-<li>嵌入式會影響到其他Apache內相關設定，而且更動到專案內的code就要restart service。</li>
-<li>Daemon跑自己的，也能偵測到code的改變，但前提是你必須手動 touch wsgi.py。</li>
-</ul>
-<ol>
-<li><p>新增 wsgi_module</p>
-<figure class="highlight apache"><table><tr><td class="code"><pre><span class="line"><span class="attribute"><span class="nomarkup">LoadModule</span></span> wsgi_module '/usr/lib64/httpd/modules/mod_wsgi.so'</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>virtualhost</p>
-<figure class="highlight apache"><table><tr><td class="code"><pre><span class="line"><span class="comment"># WSGIRestrictEmbedded 預設為 Off，因為要進入Daemon Mode所以設定為 On (也是官方推薦 讚讚) </span></span><br><span class="line"><span class="attribute">WSGIRestrictEmbedded</span> <span class="literal">On</span></span><br><span class="line"></span><br><span class="line"><span class="section">&lt;Virtualhost ip&gt;</span></span><br><span class="line"><span class="attribute"><span class="nomarkup">ServerName</span></span> domain.com</span><br><span class="line"><span class="attribute">CustomLog</span> /var/log/httpd/access.log</span><br><span class="line"><span class="attribute">ErrorLog</span> /var/log/httpd/error.log</span><br><span class="line"></span><br><span class="line"><span class="section">&lt;/Virtualhost&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 這裡主要是設定daemon的名稱還有執行的python，如果使用虛擬環境，那就是到虛擬環境裡的python.exe</span></span><br><span class="line"><span class="attribute">WSGIDaemonProcess</span> process-name python-home=path/to/python</span><br><span class="line"><span class="attribute">WSGIProcessGroup</span>  process-name</span><br><span class="line"><span class="attribute">WSGIScriptAlias</span> / 'path/to/wsgi.py'</span><br><span class="line"></span><br><span class="line"><span class="section">&lt;Directory 'path/to/wsgi'&gt;</span></span><br><span class="line"><span class="section">&lt;Files wsgi.py&gt;</span>   </span><br><span class="line"><span class="attribute">Require</span> <span class="literal">all</span> granted</span><br><span class="line"><span class="section">&lt;/Files&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># settings.py裡面設定的那個 STATICFILES_ROOT</span></span><br><span class="line"><span class="attribute">Alias</span> '/static' 'path/to/static-files'</span><br><span class="line"></span><br><span class="line"><span class="section">&lt;Directory 'path/to/static-files'&gt;</span></span><br><span class="line">    <span class="attribute">AllowOverride</span> None</span><br><span class="line">    <span class="attribute">Require</span> <span class="literal">all</span> granted</span><br><span class="line"><span class="section">&lt;/Directory&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ol>
-<p>大致上簡易的設定就是這個樣子<br><code>再提醒一次：每當有程式碼的更動，都要touch wsgi.py才會全部重新載入喔！</code></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://willynpi.github.io/2019/12/03/django-centos7-apache/" data-id="ck6mao85z0002bvt69uqee922"
-         class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Django/" rel="tag">Django</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-
-</article>
-
-
-
-      
-        
-
-<article id="post-django-custom-log-handler" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-  
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2019/11/15/django-custom-log-handler/">[Django] Custom Log handler</a>
-    </h2>
-  
-  
-
-
-
-
-      </header>
-    
-
-    
-      <div class="article-meta">
-        <a href="/2019/11/15/django-custom-log-handler/" class="article-date">
-  <time datetime="2019-11-15T00:08:16.000Z" itemprop="datePublished">2019-11-15</time>
-</a>
-        
-      </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-        <p>Log handler是當系統發生錯誤時，log 處理的方式，譬如把錯誤訊息寫入log檔案或是發信給管理者。</p>
-<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>我想要在系統出錯的時候，自動發信給管理員/IT人員。</p>
-<p>Django提供<code>AdminEmailHandler</code>以處理Django Application發生異常時，自動寄信通知管理員。<br>這裡所謂的管理員是只settings裡面<code>ADMIN</code>參數設定的資料，也表示未來要更改管理員就要動到code，當然如果有統一收信窗口就比較沒有影響。  </p>
-<p>但我的情況不是這樣，又因為我習慣用Admin site當作管理資料的GUI，superuser的角色只會給IT人員使用，所以就打算寫一個能夠從<code>UserModel</code>取得<code>superuser</code>當作收件人的log handler.  </p>
-<h2 id="研究"><a href="#研究" class="headerlink" title="研究"></a>研究</h2><p><strong>先來瞧瞧AdminEmailHandler的寫法:</strong></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AdminEmailHandler</span><span class="params">(logging.Handler)</span>:</span></span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">emit</span><span class="params">(self, record)</span>:</span></span><br><span class="line">        ...</span><br><span class="line">    </span><br><span class="line">        html_message = reporter.get_traceback_html() <span class="keyword">if</span> self.include_html <span class="keyword">else</span> <span class="literal">None</span></span><br><span class="line">        self.send_mail(subject, message, fail_silently=<span class="literal">True</span>, html_message=html_message)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">send_mail</span><span class="params">(self, subject, message, *args, **kwargs)</span>:</span></span><br><span class="line">        mail.mail_admins(subject, message, *args, connection=self.connection(), **kwargs)</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
-
-<p>可以發現發信的method使用內建的<code>mail_admins</code>，而往下追或是官方文件也寫了，這個method裡面確實讀取的收件人email來自settings的<code>ADMIN</code>參數設定。</p>
-<p>所以呢，可以繼承這個已經寫好的handler，再另外寫一個method覆蓋<code>mail_admins</code>就好。</p>
-<h2 id="實作"><a href="#實作" class="headerlink" title="實作"></a>實作</h2><p>首先要有一個替代mail_admins的method。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">mail_superusers</span><span class="params">(subject=<span class="string">''</span>, body=<span class="string">''</span>, fail_silently=False, html_message=<span class="string">''</span>)</span>:</span></span><br><span class="line">    <span class="string">"""Send a message to the superusers, users who are set to be a superuser."""</span></span><br><span class="line">    <span class="comment"># get superusers</span></span><br><span class="line">    user_model = apps.get_model(<span class="string">'base'</span>, <span class="string">'User'</span>)</span><br><span class="line">    superusers = user_model.objects.filter(is_superuser=<span class="literal">True</span>)</span><br><span class="line">    <span class="comment"># get their emails</span></span><br><span class="line">    email_addrs = [user.email <span class="keyword">for</span> user <span class="keyword">in</span> superusers]</span><br><span class="line">    connection = get_connection()</span><br><span class="line">    mail = EmailMultiAlternatives(</span><br><span class="line">                 subject=subject,</span><br><span class="line">                body=body,</span><br><span class="line">                to=email_addrs,</span><br><span class="line">                connection=connection</span><br><span class="line">            )</span><br><span class="line">    <span class="keyword">if</span> html_message:</span><br><span class="line">        mail.attach_alternative(html_message, <span class="string">'text/html'</span>)</span><br><span class="line">    mail.send(fail_silently=fail_silently)</span><br></pre></td></tr></table></figure>
-
-<p>這裡踩了一個小坑，User必須是<strong>lazy import</strong>，否則Application無法順利執行。</p>
-<p>再來是custom log handler，非常簡單，就只需要把send_mail覆寫就行:</p>
-<figure class="highlight python"><figcaption><span>log_handler.py</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SuperUserEmailHandler</span><span class="params">(AdminEmailHandler)</span>:</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">send_mail</span><span class="params">(self, subject, message, *args, **kwargs)</span>:</span></span><br><span class="line">        mail_superusers(subject, message, *args, **kwargs)</span><br></pre></td></tr></table></figure>
-
-<p>最後放到LOGGING設定裡面:  </p>
-<figure class="highlight python"><figcaption><span>settings.py</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="string">'mail_mis'</span>: &#123;</span><br><span class="line">    <span class="string">'level'</span>: <span class="string">'ERROR'</span>,</span><br><span class="line">    <span class="string">'filters'</span>: [<span class="string">'require_debug_false'</span>],</span><br><span class="line">    <span class="string">'class'</span>: <span class="string">'log_handler.SuperUserEmailHandler'</span>,</span><br><span class="line">    <span class="string">'include_html'</span>: <span class="literal">True</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>結束!</p>
-<p>但是因為他本來就是傳送一整份degug頁面(就是DEBUG=True會看見的黃頁)<br>，我也沒有特別去改寫要傳送的內容，所以email內包含很詳細的bug追蹤，是有點危險的喔。</p>
-<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p><a href="https://docs.djangoproject.com/en/2.2/topics/logging/#django.utils.log.AdminEmailHandler" target="_blank" rel="noopener">Django docs - AdminEmailHandler</a><br><a href="https://stackoverflow.com/questions/29744016/how-to-lazy-load-a-model-in-a-managers-to-stop-circular-imports" target="_blank" rel="noopener">Stackoverflow - How to Lazy Load a model in a managers to stop circular imports?</a><br><a href="https://myapollo.com.tw/zh-tw/django-customize-logging-handler/" target="_blank" rel="noopener">寫得更詳盡 - Django 打造 logging handler 將 exception 送到 Slack</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://willynpi.github.io/2019/11/15/django-custom-log-handler/" data-id="ck6mao8620005bvt6gv055t08"
-         class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Django-tricks/" rel="tag">Django, tricks</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-
-</article>
-
-
-
-      
-  </article>
-  
-
-  
-</section>
+  <div id="site_search" class="">
+  <input type="text" id="local-search-input" name="q" placeholder="search" class="form-control"/>
 </div>
+<div id="local-search-result"></div>
 
-  <footer class="footer">
-  <div class="outer">
-    <div class="float-right">
-      <ul class="list-inline">
-  
-    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
-  
-</ul>
-    </div>
-    <ul class="list-inline">
-      <li>&copy; 2020 yNotes</li>
-      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
-      <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean" target="_blank" rel="noopener">Ocean</a></li>
-    </ul>
-  </div>
-</footer>
 
-</main>
-
-  <aside class="sidebar">
-    
-    <button class="navbar-toggle"></button>
-<nav class="navbar">
-  
-    <div class="logo">
-      <a href="/"><img src="/images/logo-y.svg" alt="yNotes"></a>
-    </div>
-  
-  <ul class="nav nav-main">
-    
-      <li class="nav-item">
-        <a class="nav-item-link" href="/">Home</a>
-      </li>
-    
-      <li class="nav-item">
-        <a class="nav-item-link" href="/archives">Archives</a>
-      </li>
-    
-      <li class="nav-item">
-        <a class="nav-item-link" href="/gallery">Gallery</a>
-      </li>
-    
-      <li class="nav-item">
-        <a class="nav-item-link" href="/about">About</a>
-      </li>
-    
-    <li class="nav-item">
-      <a class="nav-item-link nav-item-search" title="搜尋">
-        <i class="fe fe-search"></i>
-        搜尋
+  <div class="nav navbar-nav navbar-right">
+    <div class="dropdown">
+      <a href="javascript:void(0);" target="_blank" rel="noopener" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+        <svg class="i-link" viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+          <path d="M18 8 C18 8 24 2 27 5 30 8 29 12 24 16 19 20 16 21 14 17 M14 24 C14 24 8 30 5 27 2 24 3 20 8 16 13 12 16 11 18 15"></path>
+        </svg>
       </a>
-    </li>
-  </ul>
+      <base href="/">
+      <ul class="dropdown-content">
+        
+          <div>
+            <a href="/links.html">
+        友情链接
+      </a>
+    </div>
+     
+          <div>
+            <a href="https://github.com/XXX/" target="_blank" rel="noopener">
+        Github
+      </a>
+    </div>
+     
+          <div>
+            <a href="http://weibo.com/XXX" target="_blank" rel="noopener">
+        微博
+      </a>
+    </div>
+     
+          <div>
+            <a href="https://www.zhihu.com/people/XXX" target="_blank" rel="noopener">
+        知乎
+      </a>
+    </div>
+     
+          <div>
+            <a href="/rss2.xml">
+        rss
+      </a>
+    </div>
+     
+          <div>
+            <a href="/">
+        关于我
+      </a>
+    </div>
+     
+    </ul>
+    </div>
+    <div class="archives"><a href="/archives">
+      <svg class="i-archive" viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+        <path d="M4 10 L4 28 28 28 28 10 M2 4 L2 10 30 10 30 4 Z M12 15 L20 15"></path>
+      </svg>
+    </a></div>
+  </div>
+  </div>
 </nav>
-<nav class="navbar navbar-bottom">
-  <ul class="nav">
-    <li class="nav-item">
-      <div class="totop" id="totop">
-  <i class="fe fe-rocket"></i>
-</div>
-    </li>
-    <li class="nav-item">
-      
-        <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
-          <i class="fe fe-feed"></i>
+
+<ul class="posts">
+  
+    
+<li class="post-item">
+  
+  
+    <h1 class="index-title">
+        <a href="/2020/05/04/influxdb-grafana-python-docker/">
+            Python + InfluxDB + Grafana
         </a>
-      
-    </li>
-  </ul>
-</nav>
-<div class="search-form-wrap">
-  <div class="local-search local-search-plugin">
-  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
-  <div id="local-search-result" class="local-search-result"></div>
+    </h1>
+  
+
+
+  <div class="excerpt">
+  
+    Python + InfluxDB + Grafana (Docker)因為懶、又只是測試，所以使用 Docker 跑 InfluxDB 和 Grafana。  
+Technical versions
+python3.7
+influxdb:
+  
+  <a href="/2020/05/04/influxdb-grafana-python-docker/">
+    更多
+  </a>
+  </div>
+  <div class="index-meta">
+    <time datetime="2020-05-04T14:43:19.000Z" itemprop="datePublished">
+  <svg class="i-calendar" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M2 6 L2 30 30 30 30 6 Z M2 15 L30 15 M7 3 L7 9 M13 3 L13 9 M19 3 L19 9 M25 3 L25 9"></path>
+  </svg>
+  &nbsp;
+  2020-05-04
+</time>
+
+
+
+
+
+    
+    &nbsp;
+    <svg class="i-tag" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+      <circle cx="24" cy="8" r="2"></circle>
+      <path d="M2 18 L18 2 30 2 30 14 14 30 Z"></path>
+    </svg>
+    &nbsp;
+    <a href="/tags/influxdb-grafana-python-docker/">influxdb,grafana,python,docker</a>
+
+
+  </div>
+</li>
+<hr>
+
+
+
+
+
+  
+    
+<li class="post-item">
+  
+  
+    <h1 class="index-title">
+        <a href="/2020/02/14/Django-dynamic-urls/">
+            [Django] Dynamic URLs
+        </a>
+    </h1>
+  
+
+
+  <div class="excerpt">
+  
+    Django Dynamic URLsHave you ever considered to create dynamic urls in Django?Not the url parameters but the ones which a
+  
+  <a href="/2020/02/14/Django-dynamic-urls/">
+    更多
+  </a>
+  </div>
+  <div class="index-meta">
+    <time datetime="2020-02-14T11:55:47.000Z" itemprop="datePublished">
+  <svg class="i-calendar" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M2 6 L2 30 30 30 30 6 Z M2 15 L30 15 M7 3 L7 9 M13 3 L13 9 M19 3 L19 9 M25 3 L25 9"></path>
+  </svg>
+  &nbsp;
+  2020-02-14
+</time>
+
+
+
+
+
+    
+    &nbsp;
+    <svg class="i-tag" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+      <circle cx="24" cy="8" r="2"></circle>
+      <path d="M2 18 L18 2 30 2 30 14 14 30 Z"></path>
+    </svg>
+    &nbsp;
+    <a href="/tags/Django-hack/">Django, hack</a>
+
+
+  </div>
+</li>
+<hr>
+
+
+
+
+
+  
+    
+<li class="post-item">
+  
+  
+    <h1 class="index-title">
+        <a href="/2020/01/23/ux-workshop/">
+            [UX] 用戶訪談的入門體驗
+        </a>
+    </h1>
+  
+
+
+  <div class="excerpt">
+  
+    用戶訪談的入門體驗 UX 工作坊之前一直想參加UX相關主題的工作坊，但近一年似乎滿稀少的，查到很多活動都是前年或是剛錯過QQ上個月突然在睡前滑到UI/UX臺中聚的FB社團，也正好在不久的將來有一場用戶訪談的入門體驗 UX 工作坊，then 
+  
+  <a href="/2020/01/23/ux-workshop/">
+    更多
+  </a>
+  </div>
+  <div class="index-meta">
+    <time datetime="2020-01-22T16:05:17.407Z" itemprop="datePublished">
+  <svg class="i-calendar" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M2 6 L2 30 30 30 30 6 Z M2 15 L30 15 M7 3 L7 9 M13 3 L13 9 M19 3 L19 9 M25 3 L25 9"></path>
+  </svg>
+  &nbsp;
+  2020-01-23
+</time>
+
+
+
+
+
+    
+    &nbsp;
+    <svg class="i-tag" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+      <circle cx="24" cy="8" r="2"></circle>
+      <path d="M2 18 L18 2 30 2 30 14 14 30 Z"></path>
+    </svg>
+    &nbsp;
+    <a href="/tags/UX-note-workshop/">UX, note, workshop</a>
+
+
+  </div>
+</li>
+<hr>
+
+
+
+
+
+  
+    
+<li class="post-item">
+  
+  
+    <h1 class="index-title">
+        <a href="/2020/01/10/explore-django-view-class/">
+            explore-django-view-class
+        </a>
+    </h1>
+  
+
+
+  <div class="excerpt">
+  
+    Python OOPclass A:        class_attr = &apos;ca&apos;        def __init__(self, instance_attr):        self.ia = instanc
+  
+  <a href="/2020/01/10/explore-django-view-class/">
+    更多
+  </a>
+  </div>
+  <div class="index-meta">
+    <time datetime="2020-01-09T17:08:41.000Z" itemprop="datePublished">
+  <svg class="i-calendar" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M2 6 L2 30 30 30 30 6 Z M2 15 L30 15 M7 3 L7 9 M13 3 L13 9 M19 3 L19 9 M25 3 L25 9"></path>
+  </svg>
+  &nbsp;
+  2020-01-10
+</time>
+
+
+
+
+
+    
+    &nbsp;
+    <svg class="i-tag" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+      <circle cx="24" cy="8" r="2"></circle>
+      <path d="M2 18 L18 2 30 2 30 14 14 30 Z"></path>
+    </svg>
+    &nbsp;
+    <a href="/tags/Django/">Django</a>
+
+
+  </div>
+</li>
+<hr>
+
+
+
+
+
+  
+    
+<li class="post-item">
+  
+  
+    <h1 class="index-title">
+        <a href="/2019/12/03/django-centos7-apache/">
+            [Django] CentOS 7 &amp; Apache
+        </a>
+    </h1>
+  
+
+
+  <div class="excerpt">
+  
+    每次要安裝東西的時候都覺得   很棒。
+這次是把Django 架在 CentOS 7 搭配 Apache 之上這種文章隨便搜都是一大把，但無奈每個人的狀況都不一樣何況有些都僅只有步驟，每次都讓我有”好像別人安裝都很順”的錯覺(當然這可能不是
+  
+  <a href="/2019/12/03/django-centos7-apache/">
+    更多
+  </a>
+  </div>
+  <div class="index-meta">
+    <time datetime="2019-12-03T12:46:55.000Z" itemprop="datePublished">
+  <svg class="i-calendar" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M2 6 L2 30 30 30 30 6 Z M2 15 L30 15 M7 3 L7 9 M13 3 L13 9 M19 3 L19 9 M25 3 L25 9"></path>
+  </svg>
+  &nbsp;
+  2019-12-03
+</time>
+
+
+
+
+
+    
+    &nbsp;
+    <svg class="i-tag" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+      <circle cx="24" cy="8" r="2"></circle>
+      <path d="M2 18 L18 2 30 2 30 14 14 30 Z"></path>
+    </svg>
+    &nbsp;
+    <a href="/tags/Django/">Django</a>
+
+
+  </div>
+</li>
+<hr>
+
+
+
+
+
+  
+    
+<li class="post-item">
+  
+  
+    <h1 class="index-title">
+        <a href="/2019/11/15/django-custom-log-handler/">
+            [Django] Custom Log handler
+        </a>
+    </h1>
+  
+
+
+  <div class="excerpt">
+  
+    Log handler是當系統發生錯誤時，log 處理的方式，譬如把錯誤訊息寫入log檔案或是發信給管理者。
+需求我想要在系統出錯的時候，自動發信給管理員/IT人員。
+Django提供AdminEmailHandler以處理Django A
+  
+  <a href="/2019/11/15/django-custom-log-handler/">
+    更多
+  </a>
+  </div>
+  <div class="index-meta">
+    <time datetime="2019-11-15T00:08:16.000Z" itemprop="datePublished">
+  <svg class="i-calendar" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M2 6 L2 30 30 30 30 6 Z M2 15 L30 15 M7 3 L7 9 M13 3 L13 9 M19 3 L19 9 M25 3 L25 9"></path>
+  </svg>
+  &nbsp;
+  2019-11-15
+</time>
+
+
+
+
+
+    
+    &nbsp;
+    <svg class="i-tag" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+      <circle cx="24" cy="8" r="2"></circle>
+      <path d="M2 18 L18 2 30 2 30 14 14 30 Z"></path>
+    </svg>
+    &nbsp;
+    <a href="/tags/Django-tricks/">Django, tricks</a>
+
+
+  </div>
+</li>
+<hr>
+
+
+
+
+
+  
+</ul>
+<ul class="pager">
+    <span class="page-number current">1</span>
+</ul>
+
+
+    </div>
+  </div>
+  <footer class="page-footer"><div class="clearfix">
 </div>
+<div class="right-foot">
+    <div class="firstrow">
+        <a href="#top" target="_self">
+        <svg class="i-caret-right" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+            <path d="M10 30 L26 16 10 2 Z"></path>
+        </svg>
+        </a>
+        © XXX 2016-2020
+    </div>
+    <div class="secondrow">
+        <a href="https://github.com/gaoryrt/hexo-theme-pln" target="_blank" rel="noopener">
+        Theme Pln
+        </a>
+    </div>
 </div>
-  </aside>
-  <script src="/js/jquery-2.0.3.min.js"></script>
-<script src="/js/jquery.justifiedGallery.min.js"></script>
-<script src="/js/lazyload.min.js"></script>
-<script src="/js/busuanzi-2.3.pure.min.js"></script>
+<div class="clearfix">
+</div>
+</footer>
+  <script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+<script src="/js/search.min.js"></script>
+<script type="text/javascript">
 
-  <script src="/fancybox/jquery.fancybox.min.js"></script>
+// disqus scripts
 
 
+// dropdown scripts
+$(".dropdown").click(function(event) {
+  var current = $(this);
+  event.stopPropagation();
+  $(current).children(".dropdown-content")[($(current).children(".dropdown-content").hasClass("open"))?'removeClass':'addClass']("open")
+});
+$(document).click(function(){
+    $(".dropdown-content").removeClass("open");
+})
 
+var path = "/search.xml";
+searchFunc(path, 'local-search-input', 'local-search-result');
 
-<script src="/js/ocean.js"></script>
+</script>
 
 </body>
 </html>
