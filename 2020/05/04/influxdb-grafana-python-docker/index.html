@@ -62,6 +62,15 @@ influxdb:latest (INFLUXDB_VERSION=1.8.0">
 </time>
 
 
+    
+    &nbsp;
+    <svg class="i-tag" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+      <circle cx="24" cy="8" r="2"></circle>
+      <path d="M2 18 L18 2 30 2 30 14 14 30 Z"></path>
+    </svg>
+    &nbsp;
+    <a href="/categories/技術筆記/">技術筆記</a>
+
 
 
 
@@ -72,13 +81,13 @@ influxdb:latest (INFLUXDB_VERSION=1.8.0">
       <path d="M2 18 L18 2 30 2 30 14 14 30 Z"></path>
     </svg>
     &nbsp;
-    <a href="/tags/influxdb-grafana-python-docker/">influxdb,grafana,python,docker</a>
+    <a href="/tags/influxdb/">influxdb</a>·<a href="/tags/grafana/">grafana</a>·<a href="/tags/python/">python</a>·<a href="/tags/docker/">docker</a>
 
 
     </div>
     <hr>
     
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Python-InfluxDB-Grafana-Docker"><span class="toc-text">Python + InfluxDB + Grafana (Docker)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Technical-versions"><span class="toc-text">Technical versions</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InfluxDB-Basic"><span class="toc-text">InfluxDB Basic</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#InfluxDB有幾個重要的詞："><span class="toc-text">InfluxDB有幾個重要的詞：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#timestamp"><span class="toc-text">timestamp</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#measurement"><span class="toc-text">measurement</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#tags"><span class="toc-text">tags</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#fields"><span class="toc-text">fields</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#series"><span class="toc-text">series</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#point"><span class="toc-text">point</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#bucket"><span class="toc-text">bucket</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#organization"><span class="toc-text">organization</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#操作起來"><span class="toc-text">操作起來!</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InfluxDB-Python"><span class="toc-text">InfluxDB-Python</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Grafana"><span class="toc-text">Grafana</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HTTP"><span class="toc-text">HTTP</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#InfluxDB-Details"><span class="toc-text">InfluxDB Details</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#References"><span class="toc-text">References</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Python-InfluxDB-Grafana-Docker"><span class="toc-text">Python + InfluxDB + Grafana (Docker)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Technical-versions"><span class="toc-text">Technical versions</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InfluxDB-Basic"><span class="toc-text">InfluxDB Basic</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#操作起來"><span class="toc-text">操作起來!</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InfluxDB-Python"><span class="toc-text">InfluxDB-Python</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Grafana"><span class="toc-text">Grafana</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#References"><span class="toc-text">References</span></a></li></ol></li></ol>
     
     <div class="picture-container">
       
@@ -90,33 +99,38 @@ influxdb:latest (INFLUXDB_VERSION=1.8.0">
 <li>grafana/grafana:6.7.2-ubuntu</li>
 </ul>
 <h2 id="InfluxDB-Basic"><a href="#InfluxDB-Basic" class="headerlink" title="InfluxDB Basic"></a>InfluxDB Basic</h2><p>DB應用不外乎要知道資料結構和如何寫入、讀取。</p>
-<h3 id="InfluxDB有幾個重要的詞："><a href="#InfluxDB有幾個重要的詞：" class="headerlink" title="InfluxDB有幾個重要的詞："></a>InfluxDB有幾個重要的詞：</h3><h4 id="timestamp"><a href="#timestamp" class="headerlink" title="timestamp"></a>timestamp</h4><p>因為是時序型資料庫，想必這個非常重要。<br><strong>DB會自帶寫入時間</strong>，所以寫入的時候<code>_time</code>這欄是可以空白的。  </p>
-<h4 id="measurement"><a href="#measurement" class="headerlink" title="measurement"></a>measurement</h4><p><code>字串</code><br>可以把他想成關聯式資料庫裡的Table。</p>
-<h4 id="tags"><a href="#tags" class="headerlink" title="tags"></a>tags</h4><p><code>key-value pair</code><br>一段資料的標籤，可以拿標籤去篩出需要的資料。</p>
-<h4 id="fields"><a href="#fields" class="headerlink" title="fields"></a>fields</h4><p><code>key-value pair</code><br>一段資料的欄位，可以拿欄位去篩出需要的資料，可以說是關聯式資料庫裡的column &amp; data。</p>
-<h4 id="series"><a href="#series" class="headerlink" title="series"></a>series</h4><p><strong><em>series key</em></strong><br><code>measurement, tag_key=tag_val field_key=field_val</code>  </p>
-<p>像是Query</p>
-<p><strong>series</strong><br>含有篩出來的資料。  </p>
+<p>InfluxDB有幾個重要的詞：</p>
+<p><strong>timestamp</strong></p>
+<p>因為是時序型資料庫，想必這個非常重要。<br><strong>DB會自帶寫入時間</strong>，所以寫入的時候<code>_time</code>這欄是可以空白的。  </p>
+<p><strong>measurement</strong><br><code>字串</code><br>可以把他想成關聯式資料庫裡的Table。</p>
+<p><strong>tags</strong><br><code>key-value pair</code><br>一段資料的標籤，可以拿標籤去篩出需要的資料。</p>
+<p><strong>fields</strong><br><code>key-value pair</code><br>一段資料的欄位，可以拿欄位去篩出需要的資料，可以說是關聯式資料庫裡的column &amp; data。</p>
+<p><strong>series</strong><br>series key像是Query<br><code>measurement, tag_key=tag_val field_key=field_val</code>  </p>
+<p>series含有篩出來的資料。</p>
 <figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line"><span class="number">2019</span><span class="number">-08</span><span class="number">-18</span>T00:<span class="number">00</span>:<span class="number">00</span>Z <span class="number">23</span></span><br><span class="line"><span class="number">2019</span><span class="number">-08</span><span class="number">-18</span>T00:<span class="number">02</span>:<span class="number">00</span>Z <span class="number">28</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="point"><a href="#point" class="headerlink" title="point"></a>point</h4><p>可以把他想成關聯式資料庫裡的Row。<br>含有_time, measurment, tags, fields</p>
-<h4 id="bucket"><a href="#bucket" class="headerlink" title="bucket"></a>bucket</h4><p>所有資料都存在一個bucket，一個bucket屬於一個orgnization。<br>每個bucket都有一個保留時間。</p>
-<h4 id="organization"><a href="#organization" class="headerlink" title="organization"></a>organization</h4><p>一個包含一組使用者、多的dashboards, tasks, buckets的工作空間。</p>
+<p><strong>point</strong><br>可以把他想成關聯式資料庫裡的Row。<br>含有_time, measurment, tags, fields</p>
+<p><strong>bucket</strong><br>所有資料都存在一個bucket，一個bucket屬於一個orgnization。<br>每個bucket都有一個保留時間。</p>
+<p><strong>organization</strong><br>一個包含一組使用者、多的dashboards, tasks, buckets的工作空間。</p>
 <h3 id="操作起來"><a href="#操作起來" class="headerlink" title="操作起來!"></a>操作起來!</h3><p>寫入資料有滿多方法的，有GUI、influx CLI、influx API(HTTP request)，透過Telegraf, InfluxDB scrapers，當然也有InfluxQL。</p>
 <p>下面說的是<code>InfluxQL</code>。</p>
-<ol>
+<ul>
 <li><p>先啟動container，並進入influx</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ docker run -p 8086:8086 -v influxdb:/var/lib/influxdb \ influxdb</span><br><span class="line">$ docker <span class="built_in">exec</span> -it influxdb influx</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>建立DB並指定在該DB下操作</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* create database [dbname] */</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">database</span> production</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> production</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>建立一筆資料。<br>不用先建立measurement唷~  </p>
+<li><p>建立一筆資料</p>
+</li>
+</ul>
+<p>不用先建立measurement唷~  </p>
 <blockquote>
 <p>注意 tag pair之間要用<code>,</code>分開，field pair也是。但tag set 和 field set之間是一個空白。</p>
 </blockquote>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* insert [measurement], [tag-set] [field-set] */</span></span><br><span class="line"><span class="keyword">insert</span> production_line, machine=<span class="number">001</span>,sensor=meter_speed <span class="keyword">value</span>=<span class="number">12</span></span><br></pre></td></tr></table></figure>
-</li>
+
+<ul>
 <li><p>查詢</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* select [field-key] from [measurement] */</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> production_line</span><br><span class="line"></span><br><span class="line"><span class="comment">/* select [field-key] from [measurement] where [tag-key]=[tag-value] */</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">"value"</span> <span class="keyword">from</span> <span class="string">"production_line"</span> <span class="keyword">where</span> <span class="string">"machine"</span>=<span class="string">"001"</span>,<span class="string">"sensor"</span>=<span class="string">"meter_speed"</span></span><br></pre></td></tr></table></figure>
 </li>
@@ -128,32 +142,33 @@ influxdb:latest (INFLUXDB_VERSION=1.8.0">
 
 
 </li>
-</ol>
+</ul>
 <h2 id="InfluxDB-Python"><a href="#InfluxDB-Python" class="headerlink" title="InfluxDB-Python"></a>InfluxDB-Python</h2><p><a href="https://github.com/influxdata/influxdb-python" target="_blank" rel="noopener">GitHub</a><br>上面有一些基礎的範例。  </p>
 <p>安裝很順利</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ pip install influxdb</span><br></pre></td></tr></table></figure>
 
-<ol>
+<ul>
 <li>連接InfluxDB</li>
-</ol>
+</ul>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> influxdb <span class="keyword">import</span> InfluxDBClient</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立連線</span></span><br><span class="line">client = InfluxDBClient(<span class="string">'localhost'</span>, port, <span class="string">'root'</span>, <span class="string">'root'</span>, <span class="string">'production'</span>)</span><br></pre></td></tr></table></figure>
 
-<ol start="2">
+<ul>
 <li>操作起來<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 新增DB</span></span><br><span class="line">client.create_database(<span class="string">'production'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 要存入的資料!</span></span><br><span class="line">json_data = [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">"measurement"</span>: <span class="string">"production_line"</span>,</span><br><span class="line">        <span class="string">"tags"</span>: &#123;</span><br><span class="line">            <span class="string">"machine"</span>: <span class="string">"001"</span>,</span><br><span class="line">            <span class="string">"sensor"</span>: <span class="string">"meter_speed"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">"time"</span>: <span class="string">"2009-11-10T23:00:00Z"</span>,</span><br><span class="line">        <span class="string">"fields"</span>: &#123;</span><br><span class="line">            <span class="string">"value"</span>: <span class="number">12</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 寫入</span></span><br><span class="line">client.write_points(json_data)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 讀取</span></span><br><span class="line">result = client.query(<span class="string">'select value from production_line;'</span>)</span><br></pre></td></tr></table></figure>
 
 </li>
-</ol>
+</ul>
 <h2 id="Grafana"><a href="#Grafana" class="headerlink" title="Grafana"></a>Grafana</h2><p>不贅述什麼是Dashboard、Panels和各種關於Grafana的基礎操作。</p>
-<ol>
-<li>先啟動container<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ docker run -d -p 3000:3000 --name grafana grafana/grafana:&lt;version number&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>先啟動container<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ docker run -d -p 3000:3000 \</span><br><span class="line">             --name grafana grafana/grafana:&lt;version number&gt;</span><br></pre></td></tr></table></figure>
 
 </li>
-</ol>
+</ul>
 <p>在 <code>http://localhost:3000</code> 就能看到登入畫面。<br>預設帳密都是<code>admin</code>。</p>
-<ol start="2">
-<li>從<code>Add data source</code>新增InfluxDB的連接。</li>
-</ol>
-<h4 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h4><table>
+<ul>
+<li>從<code>Add data source</code>新增InfluxDB的連接:</li>
+</ul>
+<p><strong>HTTP</strong></p>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -169,7 +184,8 @@ influxdb:latest (INFLUXDB_VERSION=1.8.0">
 <td>Browser</td>
 </tr>
 </tbody></table>
-<h4 id="InfluxDB-Details"><a href="#InfluxDB-Details" class="headerlink" title="InfluxDB Details"></a>InfluxDB Details</h4><table>
+<p><strong>InfluxDB Details</strong></p>
+<table>
 <thead>
 <tr>
 <th>Field</th>
@@ -193,15 +209,10 @@ influxdb:latest (INFLUXDB_VERSION=1.8.0">
 <td>GET</td>
 </tr>
 </tbody></table>
-<ol start="3">
-<li><p>Save &amp; Test</p>
-</li>
-<li><p>新增 Panel</p>
-<p> 在Query裡面設定Query，就和上面所述的讀取一模一樣。</p>
-</li>
-<li><p>That’s all!</p>
-</li>
-</ol>
+<p><strong>Save &amp; Test</strong></p>
+<p><strong>新增 Panel</strong></p>
+<p>在Query裡面設定Query，就和上面所述的讀取一模一樣。</p>
+<p><strong>That’s all!</strong></p>
 <h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p><a href="https://dotblogs.com.tw/dizzydizzy/2018/06/30/influxbasicoper" target="_blank" rel="noopener">InfluxDB 簡易操作</a><br><a href="http://yume190.github.io/2016/01/06/InfluxDB/" target="_blank" rel="noopener">InfluxDB|Yume 練功地</a><br><a href="https://hub.docker.com/_/influxdb" target="_blank" rel="noopener">InfluxDB Docker</a><br><a href="https://grafana.com/docs/grafana/latest/installation/docker/" target="_blank" rel="noopener">Run Grafana Docker Image</a>  </p>
 
 
@@ -210,9 +221,9 @@ influxdb:latest (INFLUXDB_VERSION=1.8.0">
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
   </script>
   <div class="busuanzi center">
-    页阅读量:&nbsp;<span id="busuanzi_value_page_pv"></span>&nbsp;・&nbsp;
-    站访问量:&nbsp;<span id="busuanzi_value_site_pv"></span>&nbsp;・&nbsp;
-    站访客数:&nbsp;<span id="busuanzi_value_site_uv"></span>
+    閱讀量:&nbsp;<span id="busuanzi_value_page_pv"></span>&nbsp;・&nbsp;
+    訪問數:&nbsp;<span id="busuanzi_value_site_pv"></span>&nbsp;・&nbsp;
+    訪客量:&nbsp;<span id="busuanzi_value_site_uv"></span>
   </div>
 
 
@@ -233,11 +244,11 @@ influxdb:latest (INFLUXDB_VERSION=1.8.0">
             <path d="M10 30 L26 16 10 2 Z"></path>
         </svg>
         </a>
-        © XXX 2016-2020
+        ©Ying 2019-2020
     </div>
     <div class="secondrow">
-        <a href="https://github.com/gaoryrt/hexo-theme-pln" target="_blank" rel="noopener">
-        Theme Pln
+        <a href="https://willynpi.github.io">
+        
         </a>
     </div>
 </div>
